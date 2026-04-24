@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Register — KrishiAI{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white text-center py-3">
+          <h4 class="mb-0"><i class="bi bi-person-plus me-2"></i>Create Account</h4>
+          <small>Join KrishiAI — it's free</small>
+        </div>
+        <div class="card-body p-4">
+
+          <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+
+            <!-- Role Selection -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">I am a:</label>
+              <div class="d-flex gap-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role"
+                         id="roleFarmer" value="farmer" checked />
+                  <label class="form-check-label" for="roleFarmer">
+                    🌾 Farmer
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role"
+                         id="roleBuyer" value="buyer" />
+                  <label class="form-check-label" for="roleBuyer">
+                    🛒 Buyer
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name"
+                     placeholder="Your full name" required />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email"
+                     placeholder="you@example.com" required />
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone"
+                     placeholder="+91 XXXXXXXXXX" />
+            </div>
+
+            <!-- Location (always visible) -->
+            <div class="mb-3">
+              <label for="location" class="form-label">Location / Village</label>
+              <input type="text" class="form-control" id="location" name="location"
+                     placeholder="e.g. Pune, Maharashtra" />
+            </div>
+
+            <!-- Soil Type (farmer-only field) -->
+            <div id="farmerFields">
+              <div class="mb-3">
+                <label for="soil_type" class="form-label">Soil Type <small class="text-muted">(Farmer)</small></label>
+                <select class="form-select" id="soil_type" name="soil_type">
+                  <option value="">Select soil type</option>
+                  <option>Loamy</option>
+                  <option>Clay</option>
+                  <option>Sandy</option>
+                  <option>Silt</option>
+                  <option>Peat</option>
+                  <option>Chalky</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password"
+                     placeholder="Min 6 characters" required minlength="6" />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm_password"
+                     name="confirm_password" placeholder="Repeat password" required />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">
+              <i class="bi bi-check-circle me-1"></i>Create My Account
+            </button>
+          </form>
+
+          <hr />
+          <p class="text-center mb-0">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="text-success fw-semibold">Log In</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show/hide farmer-only fields based on role
+  const radios = document.querySelectorAll('input[name="role"]');
+  const farmerFields = document.getElementById('farmerFields');
+  radios.forEach(r => r.addEventListener('change', () => {
+    farmerFields.style.display = r.value === 'farmer' && r.checked ? 'block' : 'none';
+  }));
+  // Set initial state
+  document.querySelector('input[name="role"][value="buyer"]')
+          ?.addEventListener('change', () => farmerFields.style.display = 'none');
+</script>
+{% endblock %}

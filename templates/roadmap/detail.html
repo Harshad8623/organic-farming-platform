@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}{{ crop.crop_name }} Roadmap — धरती रक्षक{% endblock %}
+
+{% block head_extra %}
+<style>
+  .roadmap-hero-detail {
+    background: linear-gradient(135deg, #0d2b1a, #1a5c34);
+    color: white;
+    padding: 56px 0 40px;
+    text-align: center;
+  }
+  .roadmap-hero-detail .emoji-big { font-size: 100px; line-height: 1; }
+  .roadmap-hero-detail h1 { font-size: 2.4rem; font-weight: 800; }
+  .roadmap-hero-detail p  { color: rgba(255,255,255,0.8); font-size: 1.05rem; }
+
+  .info-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.15); border-radius: 30px;
+    padding: 6px 18px; font-size: 13px; color: white; margin: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* Timeline */
+  .timeline { position: relative; padding: 0; list-style: none; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 36px;
+    top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, #2ed573, #1a5c34, #0d2b1a);
+    border-radius: 2px;
+  }
+  .timeline-item {
+    position: relative;
+    padding: 0 0 40px 90px;
+  }
+  .timeline-icon {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ed573, #1e8449);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 14px rgba(46,213,115,0.4);
+    border: 3px solid white;
+    z-index: 1;
+  }
+  .timeline-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 3px 20px rgba(0,0,0,0.07);
+    border: 1px solid #f0f0f0;
+    transition: box-shadow 0.2s;
+  }
+  .timeline-card:hover { box-shadow: 0 8px 30px rgba(45,106,79,0.14); }
+  .timeline-card h5 {
+    color: #1a3a2a; font-weight: 700; font-size: 1.1rem; margin-bottom: 4px;
+  }
+  .timeline-days {
+    font-size: 12px; color: #2d6a4f; font-weight: 600;
+    background: #e8f5e9; border-radius: 20px;
+    padding: 2px 10px; display: inline-block; margin-bottom: 12px;
+  }
+  .timeline-card ul { padding-left: 20px; margin-bottom: 0; }
+  .timeline-card ul li { margin-bottom: 4px; font-size: 14px; color: #444; }
+
+  .tips-box {
+    background: linear-gradient(135deg, #f0faf3, #e8f5e9);
+    border-left: 4px solid #2ed573;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 12px;
+  }
+  .tips-box h6 { color: #2d6a4f; font-weight: 700; margin-bottom: 8px; }
+  .tips-box ul { padding-left: 18px; margin-bottom: 0; }
+  .tips-box ul li { font-size: 13px; color: #4a7c5c; margin-bottom: 3px; }
+
+  .stage-icons = ['🌱','🌿','🌱','💧','☀️','🌸','🍅','✂️','📦'];
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="roadmap-hero-detail">
+  <div class="container">
+    <div class="emoji-big">{{ crop.emoji }}</div>
+    <h1 class="mt-3">{{ crop.crop_name }} — Organic Roadmap</h1>
+    <p class="mt-2">{{ crop.description }}</p>
+    <div class="mt-3">
+      {% if crop.season %}
+      <span class="info-pill">🗓️ {{ crop.season }} Season</span>
+      {% endif %}
+      {% if crop.duration_days %}
+      <span class="info-pill">⏱️ {{ crop.duration_days }} days</span>
+      {% endif %}
+      {% if crop.expected_yield %}
+      <span class="info-pill">📦 {{ crop.expected_yield }}</span>
+      {% endif %}
+      {% if crop.soil_type %}
+      <span class="info-pill">🪨 {{ crop.soil_type }}</span>
+      {% endif %}
+      {% if crop.climate %}
+      <span class="info-pill">🌡️ {{ crop.climate }}</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5">
+  <div class="row">
+
+    <!-- Timeline -->
+    <div class="col-lg-8">
+      <h3 class="fw-bold mb-4" style="color:#1a3a2a;">
+        📋 Farming Timeline
+      </h3>
+
+      {% if stages %}
+      <ul class="timeline">
+        {% set stage_icons = ['🌾','🌱','💧','🌿','🌞','🌸','🍅','🔪','📦','🚜'] %}
+        {% for stage in stages %}
+        <li class="timeline-item">
+          <div class="timeline-icon">
+            {{ stage_icons[loop.index0 % 10] }}
+          </div>
+          <div class="timeline-card">
+            <h5>Stage {{ loop.index }}: {{ stage.stage }}</h5>
+            {% if stage.days %}
+            <span class="timeline-days">📅 {{ stage.days }}</span>
+            {% endif %}
+
+            {% if stage.actions %}
+            <p class="text-muted mb-2" style="font-size:13px;font-weight:600;">Key Actions:</p>
+            <ul>
+              {% for action in stage.actions %}
+              <li>{{ action }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if stage.tips %}
+            <div class="tips-box">
+              <h6>💡 Organic Tips</h6>
+              <ul>
+                {% for tip in stage.tips %}
+                <li>{{ tip }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="text-center text-muted py-5">
+        <p>No stage data available yet.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Quick Info Card -->
+      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
+        <div class="card-header text-white fw-bold" style="background:#2d6a4f;">
+          🌿 Quick Crop Summary
+        </div>
+        <div class="card-body">
+          <table class="table table-sm table-borderless mb-0">
+            <tbody>
+              <tr><td class="text-muted">Crop</td><td class="fw-semibold">{{ crop.crop_name }}</td></tr>
+              {% if crop.season %}<tr><td class="text-muted">Season</td><td>{{ crop.season }}</td></tr>{% endif %}
+              {% if crop.duration_days %}<tr><td class="text-muted">Duration</td><td>{{ crop.duration_days }} days</td></tr>{% endif %}
+              {% if crop.expected_yield %}<tr><td class="text-muted">Yield</td><td>{{ crop.expected_yield }}</td></tr>{% endif %}
+              {% if crop.soil_type %}<tr><td class="text-muted">Soil</td><td>{{ crop.soil_type }}</td></tr>{% endif %}
+              {% if crop.climate %}<tr><td class="text-muted">Climate</td><td>{{ crop.climate }}</td></tr>{% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Buy Organic Inputs -->
+      <a href="{{ url_for('marketplace.listing', search=crop.crop_name) }}"
+         class="btn w-100 mb-3 fw-bold"
+         style="background:linear-gradient(135deg,#2ed573,#1e8449);color:white;border-radius:12px;padding:14px;">
+        🛒 Buy {{ crop.crop_name }} from Marketplace
+      </a>
+
+      <!-- Back -->
+      <a href="{{ url_for('roadmap.index') }}"
+         class="btn w-100 btn-outline-secondary"
+         style="border-radius:12px;">
+        ← All Crop Roadmaps
+      </a>
+
+      <!-- General Tips -->
+      <div class="card border-0 shadow-sm mt-4" style="border-radius:16px;">
+        <div class="card-header fw-bold" style="background:#fff3cd;">
+          ☀️ General Organic Tips
+        </div>
+        <div class="card-body">
+          <ul class="mb-0" style="font-size:13px;padding-left:18px;">
+            <li>Use compost and vermicompost for soil health.</li>
+            <li>Neem oil spray for pest control.</li>
+            <li>Crop rotation prevents soil depletion.</li>
+            <li>Drip irrigation conserves water.</li>
+            <li>Test soil pH before every season.</li>
+            <li>Inter-cropping improves yield naturally.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Disease Detection — KrishiAI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <h2 class="fw-bold text-success mb-1"><i class="bi bi-search me-2"></i>Plant Disease Detection</h2>
+  <p class="text-muted mb-4">Upload a leaf photo and get instant disease diagnosis with organic treatment solutions.</p>
+
+  <div class="row g-4">
+
+    <!-- Upload Form -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <i class="bi bi-cloud-upload me-1"></i>Upload Leaf Image
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('disease.detect') }}"
+                enctype="multipart/form-data">
+
+            <!-- Drop zone -->
+            <div class="upload-zone mb-3" id="dropZone">
+              <div class="upload-icon">📷</div>
+              <p class="mb-1">Drag & drop or click to upload</p>
+              <small class="text-muted">Supported: JPG, PNG, WEBP (max 16MB)</small>
+              <input type="file" id="leaf_image" name="leaf_image"
+                     accept="image/*" class="file-input" onchange="previewLeaf(event)" required />
+            </div>
+
+            <!-- Image preview -->
+            <div id="leafPreviewDiv" style="display:none;" class="mb-3 text-center">
+              <img id="leafPreview" src="#" class="img-fluid rounded"
+                   style="max-height:200px;" alt="Preview" />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">
+              <i class="bi bi-lightning me-1"></i>Detect Disease
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="card mt-3">
+        <div class="card-body">
+          <h6 class="fw-semibold">📸 Tips for best results:</h6>
+          <ul class="small text-muted mb-0">
+            <li>Take photo in natural daylight</li>
+            <li>Focus on the affected leaf/area</li>
+            <li>Avoid blurry or dark images</li>
+            <li>Include both sides of the leaf if possible</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Panel -->
+    <div class="col-lg-7">
+    {% if result %}
+        <div class="card shadow-sm mb-3">
+          <div class="card-header d-flex align-items-center gap-2
+            {% if result.severity == 'high' %}bg-danger
+            {% elif result.severity == 'medium' %}bg-warning
+            {% elif result.severity == 'none' and result.name == 'Healthy Plant' %}bg-success
+            {% elif result.severity == 'none' %}bg-secondary
+            {% else %}bg-secondary{% endif %} text-white">
+            <i class="bi bi-shield-exclamation"></i>
+            <span>Detection Result — Severity: {{ result.severity.upper() }}</span>
+            {% if result.get('ai_powered') %}
+              <span class="ms-auto badge bg-light text-dark">🤖 Gemini AI</span>
+            {% else %}
+              <span class="ms-auto badge bg-light text-dark">📋 Demo Mode</span>
+            {% endif %}
+          </div>
+          <div class="card-body">
+
+            {% if image_url %}
+              <img src="{{ image_url }}" class="img-fluid rounded mb-3"
+                   style="max-height:200px;" alt="Uploaded leaf" />
+            {% endif %}
+
+            {% if '❌' in result.name %}
+              <div class="alert alert-warning d-flex gap-2 align-items-start">
+                <span style="font-size:2rem">🚫</span>
+                <div>
+                  <strong>{{ result.name }}</strong><br>
+                  {{ result.symptoms }}
+                </div>
+              </div>
+            {% else %}
+              <h4 class="fw-bold text-success">{{ result.name }}</h4>
+              <p class="text-muted small mb-1">
+                <i class="bi bi-tree me-1"></i><strong>Affected crops:</strong> {{ result.crops }}
+              </p>
+              <p class="text-muted small mb-1">
+                <i class="bi bi-bug me-1"></i><strong>Cause:</strong> {{ result.cause }}
+              </p>
+
+              <div class="alert alert-warning mt-2">
+                <strong>Symptoms:</strong> {{ result.symptoms }}
+              </div>
+
+              <h6 class="fw-semibold mt-3">🌿 Organic Treatment Solutions:</h6>
+              <ol class="mb-0">
+                {% for sol in result.organic_solutions %}
+                  <li class="mb-1 small">{{ sol }}</li>
+                {% endfor %}
+              </ol>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <a href="{{ url_for('disease.detect') }}" class="btn btn-outline-success btn-sm">
+          <i class="bi bi-arrow-repeat me-1"></i>Test Another Image
+        </a>
+
+      {% else %}
+        <div class="card h-100 d-flex align-items-center justify-content-center bg-light">
+          <div class="text-center text-muted p-5">
+            <div style="font-size:4rem">🍃</div>
+            <h5 class="mt-3">Upload a leaf photo</h5>
+            <p>The AI will identify the disease and show organic treatment options.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<script>
+function previewLeaf(event) {
+  const file = event.target.files[0];
+  if (file) {
+    document.getElementById('leafPreview').src = URL.createObjectURL(file);
+    document.getElementById('leafPreviewDiv').style.display = 'block';
+    document.getElementById('dropZone').querySelector('p').textContent = file.name;
+  }
+}
+// Click on dropzone triggers file input
+document.getElementById('dropZone').addEventListener('click', () =>
+  document.getElementById('leaf_image').click()
+);
+</script>
+{% endblock %}

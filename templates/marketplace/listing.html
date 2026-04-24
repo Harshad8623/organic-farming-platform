@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Marketplace — धरती रक्षक{% endblock %}
+
+{% block head_extra %}
+<style>
+  .marketplace-hero {
+    background: linear-gradient(135deg, #0d2b1a 0%, #1a5c34 60%, #0d2b1a 100%);
+    padding: 52px 0 40px; text-align: center; color: white; margin-bottom: 0;
+  }
+  .marketplace-hero h1 { font-size: 2.4rem; font-weight: 800; }
+  .marketplace-hero p { color: rgba(255,255,255,0.8); font-size: 1.05rem; }
+
+  .search-bar-wrap {
+    background: white; border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    padding: 20px 24px; margin-top: -28px; margin-bottom: 28px;
+    position: relative; z-index: 2;
+  }
+
+  .product-card {
+    background: white; border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    border: 1px solid #f0f0f0; overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex; flex-direction: column; height: 100%;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 36px rgba(45,106,79,0.16);
+  }
+  .product-img { height: 180px; object-fit: cover; width: 100%; }
+  .product-img-placeholder {
+    height: 180px; background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
+    display: flex; align-items: center; justify-content: center; font-size: 64px;
+  }
+  .product-card .card-body { padding: 16px 20px; flex: 1; display: flex; flex-direction: column; }
+  .product-card h6 { font-weight: 700; font-size: 1rem; color: #1a3a2a; margin-bottom: 4px; }
+
+  .stars-mini { color: #f9ca24; font-size: 13px; }
+  .rating-count { font-size: 11px; color: #6c757d; }
+
+  .btn-add-cart {
+    background: linear-gradient(135deg, #2ed573, #1e8449);
+    color: white; border: none; border-radius: 10px;
+    padding: 9px 14px; font-size: 13px; font-weight: 600;
+    transition: transform 0.15s, box-shadow 0.15s; cursor: pointer; width: 100%;
+  }
+  .btn-add-cart:hover {
+    transform: translateY(-2px); color: white;
+    box-shadow: 0 6px 18px rgba(46,213,115,0.4);
+  }
+  .btn-contact-farmer {
+    border: 1.5px solid #2d6a4f; color: #2d6a4f; background: white;
+    border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 600;
+    transition: all 0.15s; text-decoration: none; display: block; text-align: center;
+  }
+  .btn-contact-farmer:hover { background: #2d6a4f; color: white; }
+
+  .category-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 20px;
+    background: #e8f5e9; color: #2d6a4f; border: 1px solid #c3e6cb;
+    font-weight: 600; display: inline-block; margin-bottom: 8px;
+  }
+
+  .qty-select { width: 64px; border-radius: 8px; font-size: 13px; border: 1.5px solid #dee2e6; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="marketplace-hero">
+  <h1>🛍️ Organic Marketplace</h1>
+  <p>Buy directly from verified organic farmers — no middlemen, freshest produce</p>
+</div>
+
+<div class="container">
+  <!-- Search Bar -->
+  <div class="search-bar-wrap">
+    <form method="GET" action="{{ url_for('marketplace.listing') }}" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <input type="text" class="form-control" name="search" id="search-input"
+               placeholder="🔍 Search tomato, potato, rice..." value="{{ search }}" />
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" name="category">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success w-100 fw-semibold">🔍 Filter</button>
+      </div>
+      {% if search or selected_category %}
+      <div class="col-md-2">
+        <a href="{{ url_for('marketplace.listing') }}" class="btn btn-outline-secondary w-100">✕ Clear</a>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Farmer Actions -->
+  {% if current_user.is_authenticated and current_user.is_farmer() %}
+  <div class="mb-4 d-flex gap-2">
+    <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success fw-semibold">
+      <i class="bi bi-plus-circle me-1"></i>Add Product
+    </a>
+    <a href="{{ url_for('marketplace.my_products') }}" class="btn btn-outline-success fw-semibold">
+      <i class="bi bi-list-ul me-1"></i>My Listings
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Product Grid -->
+  {% if products %}
+  <div class="row g-4">
+    {% for p in products %}
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        {% if p.image_filename %}
+          <img src="/static/uploads/{{ p.image_filename }}" class="product-img" alt="{{ p.name }}" />
+        {% else %}
+          <div class="product-img-placeholder">🌿</div>
+        {% endif %}
+
+        <div class="card-body">
+          <h6>{{ p.name }}</h6>
+
+          {% if p.category %}
+          <span class="category-badge">{{ p.category }}</span>
+          {% endif %}
+
+          <!-- Star Rating -->
+          <div class="mb-1">
+            {% if p.avg_rating > 0 %}
+            <span class="stars-mini">
+              {% for i in range(p.avg_rating | int) %}★{% endfor %}{% for i in range(5 - p.avg_rating | int) %}☆{% endfor %}
+            </span>
+            <span class="rating-count">({{ p.ratings|length }})</span>
+            {% else %}
+            <span class="rating-count">No ratings yet</span>
+            {% endif %}
+          </div>
+
+          <p class="fw-bold mb-1" style="color:#1e8449;font-size:1rem;">₹{{ p.price }} / unit</p>
+          <p class="text-muted small mb-1">📦 {{ p.quantity }}</p>
+
+          {% if p.description %}
+          <p class="small text-muted mb-2">{{ p.description[:70] }}{% if p.description|length > 70 %}…{% endif %}</p>
+          {% endif %}
+
+          <p class="small text-muted mt-auto mb-3">
+            🌾 By <strong>{{ p.farmer.name }}</strong>
+          </p>
+
+          <!-- Actions -->
+          {% if current_user.is_authenticated and current_user.is_buyer() %}
+          <form method="POST" action="{{ url_for('cart.add_to_cart', product_id=p.id) }}" class="d-flex gap-1 mb-2">
+            <select name="quantity" class="qty-select form-select">
+              {% for q in range(1, 11) %}
+              <option value="{{ q }}">{{ q }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-add-cart">
+              🛒 Add to Cart
+            </button>
+          </form>
+          {% elif not current_user.is_authenticated %}
+          <a href="{{ url_for('auth.login') }}" class="btn-add-cart mb-2" style="display:block;text-align:center;text-decoration:none;">
+            🔐 Login to Buy
+          </a>
+          {% endif %}
+
+          <a href="{{ url_for('marketplace.farmer_detail', farmer_id=p.farmer_id) }}"
+             class="btn-contact-farmer">
+            <i class="bi bi-person me-1"></i>Contact Farmer
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <div style="font-size:64px;">🌿</div>
+    <h4 class="text-muted mt-3">
+      {% if search %}No products found for "<strong>{{ search }}</strong>".
+      {% else %}No products listed yet.{% endif %}
+    </h4>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

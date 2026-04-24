@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Rate Order — धरती रक्षक{% endblock %}
+
+{% block head_extra %}
+<style>
+  .rate-page { min-height: 80vh; background: #f8faf9; }
+  .rate-hero {
+    background: linear-gradient(135deg, #1a3a2a, #2d6a4f);
+    color: white; padding: 50px 0 40px; text-align: center;
+  }
+  .rate-hero h1 { font-size: 2rem; font-weight: 800; }
+
+  .rate-card {
+    background: white; border-radius: 24px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 560px; margin: -30px auto 40px;
+    position: relative;
+    border: 1px solid #f0f0f0;
+  }
+
+  /* Star Rating Widget */
+  .star-rating { display: flex; flex-direction: row-reverse; gap: 8px; justify-content: center; margin: 24px 0; }
+  .star-rating input { display: none; }
+  .star-rating label {
+    font-size: 48px; cursor: pointer; color: #dee2e6;
+    transition: color 0.15s, transform 0.15s;
+  }
+  .star-rating input:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: #f9ca24;
+    transform: scale(1.15);
+  }
+
+  .star-hint {
+    text-align: center; font-size: 14px; color: #6c757d; margin-bottom: 4px;
+    min-height: 20px; font-weight: 500;
+  }
+
+  .order-summary {
+    background: #f8faf9; border-radius: 14px; padding: 16px 20px;
+    margin-bottom: 24px; border: 1px solid #f0f0f0;
+  }
+  .order-summary .label { font-size: 12px; color: #6c757d; font-weight: 600; text-transform: uppercase; }
+  .order-summary .value { font-size: 14px; color: #1a3a2a; font-weight: 600; }
+
+  .btn-submit-rating {
+    background: linear-gradient(135deg, #f9ca24, #f0932b);
+    color: white; border: none; border-radius: 14px;
+    padding: 14px; font-size: 16px; font-weight: 700;
+    width: 100%; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-submit-rating:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(249,202,36,0.5);
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="rate-hero">
+  <h1>⭐ Rate Your Order</h1>
+  <p style="color:rgba(255,255,255,0.75);">Your feedback helps other buyers and improves farmers</p>
+</div>
+
+<div class="rate-page">
+  <div class="container">
+    <div class="rate-card">
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="label">Product</div>
+            <div class="value">{{ order.product.name }}</div>
+          </div>
+          <div class="col-6">
+            <div class="label">Farmer</div>
+            <div class="value">{{ order.farmer.name }}</div>
+          </div>
+          <div class="col-6">
+            <div class="label">Quantity</div>
+            <div class="value">{{ order.quantity_ordered }}</div>
+          </div>
+          <div class="col-6">
+            <div class="label">Total Paid</div>
+            <div class="value" style="color:#1e8449;">₹{{ "%.2f"|format(order.total_price) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating Form -->
+      <form method="POST" action="{{ url_for('orders.rate_order', order_id=order.id) }}" id="rating-form">
+        <h5 class="text-center fw-bold mb-0" style="color:#1a3a2a;">How would you rate this product?</h5>
+        <div class="star-hint" id="star-hint">Click a star to rate</div>
+
+        <!-- Stars (reverse-order for CSS trick) -->
+        <div class="star-rating">
+          {% for val in [5, 4, 3, 2, 1] %}
+          <input type="radio" name="stars" id="star{{ val }}" value="{{ val }}" required>
+          <label for="star{{ val }}" title="{{ val }} star{% if val > 1 %}s{% endif %}">★</label>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label class="form-label fw-semibold">Write a Review <span class="text-muted fw-normal">(optional)</span></label>
+          <textarea class="form-control" name="review" rows="4"
+                    placeholder="Share your experience — was the product fresh? Did it arrive on time? Any tips for other buyers?"
+                    style="border-radius:12px;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit-rating" id="submit-btn" disabled>
+          ⭐ Submit Rating
+        </button>
+      </form>
+
+      <div class="text-center mt-3">
+        <a href="{{ url_for('orders.buyer_orders') }}" class="text-muted" style="font-size:14px;">
+          ← Back to My Orders
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const hints = {
+  1: '😞 Poor — Very dissatisfied',
+  2: '😐 Fair — Below expectations',
+  3: '🙂 Good — Met expectations',
+  4: '😊 Very Good — Exceeded expectations',
+  5: '🤩 Excellent — Extremely satisfied!'
+};
+
+document.querySelectorAll('.star-rating input').forEach(input => {
+  input.addEventListener('change', () => {
+    const val = parseInt(input.value);
+    document.getElementById('star-hint').textContent = hints[val] || '';
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = `⭐ Submit ${val}-Star Rating`;
+  });
+});
+</script>
+{% endblock %}

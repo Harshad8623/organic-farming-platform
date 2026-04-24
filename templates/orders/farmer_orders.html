@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% block title %}Incoming Orders — धरती रक्षक{% endblock %}
+
+{% block head_extra %}
+<style>
+  .farmer-orders-hero {
+    background: linear-gradient(135deg, #0d2b1a, #1a5c34);
+    color: white; padding: 40px 0 32px; text-align: center;
+  }
+  .farmer-orders-hero h1 { font-size: 2rem; font-weight: 800; }
+
+  .order-card {
+    background: white; border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    border: 1px solid #f0f0f0; overflow: hidden;
+    margin-bottom: 24px; transition: box-shadow 0.2s;
+  }
+  .order-card:hover { box-shadow: 0 8px 28px rgba(45,106,79,0.12); }
+
+  .order-header {
+    background: #f8faf9; padding: 14px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .order-body { padding: 22px 24px; }
+
+  .badge-status {
+    font-size: 12px; padding: 5px 14px; border-radius: 20px; font-weight: 600;
+  }
+  .status-pending   { background: #fff3cd; color: #856404; }
+  .status-accepted  { background: #d1e7dd; color: #0a3622; }
+  .status-rejected  { background: #f8d7da; color: #842029; }
+  .status-shipped   { background: #cfe2ff; color: #084298; }
+  .status-delivered { background: #d1e7dd; color: #0a3622; border: 1px solid #a3cfbb; }
+
+  .buyer-info { background: #f8f9fa; border-radius: 12px; padding: 14px 18px; }
+  .buyer-info .label { font-size: 11px; color: #6c757d; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .buyer-info .value { font-size: 14px; color: #1a3a2a; font-weight: 600; }
+
+  .action-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+  .btn-accept {
+    background: linear-gradient(135deg, #2ed573, #1e8449);
+    color: white; border: none; border-radius: 12px;
+    padding: 10px 22px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-accept:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(46,213,115,0.4); }
+
+  .btn-reject {
+    background: #fff0f0; color: #c0392b;
+    border: 1.5px solid #f5c6cb; border-radius: 12px;
+    padding: 10px 22px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-reject:hover { background: #dc3545; color: white; border-color: #dc3545; }
+
+  .btn-ship {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1);
+    color: white; border: none; border-radius: 12px;
+    padding: 10px 22px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .btn-ship:hover { transform: translateY(-2px); }
+
+  .btn-deliver {
+    background: linear-gradient(135deg, #f9ca24, #f0932b);
+    color: white; border: none; border-radius: 12px;
+    padding: 10px 22px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .btn-deliver:hover { transform: translateY(-2px); }
+
+  .payment-tag {
+    font-size: 12px; background: #f3f4f6; border-radius: 20px;
+    padding: 3px 12px; color: #374151; font-weight: 600; border: 1px solid #e5e7eb;
+  }
+  .order-stats {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 28px;
+  }
+  .stat-box {
+    flex: 1; min-width: 120px; background: white; border-radius: 14px;
+    padding: 16px 20px; text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;
+  }
+  .stat-box .num { font-size: 1.8rem; font-weight: 800; color: #1a3a2a; }
+  .stat-box .lbl { font-size: 12px; color: #6c757d; margin-top: 2px; }
+
+  .empty-state { text-align: center; padding: 80px 20px; }
+  .rating-stars { color: #f9ca24; font-size: 14px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="farmer-orders-hero">
+  <h1>📬 Incoming Orders</h1>
+  <p style="color:rgba(255,255,255,0.75);">Manage and fulfill buyer orders</p>
+</div>
+
+<div class="container py-4">
+
+  <!-- Stats -->
+  {% if orders %}
+  <div class="order-stats">
+    <div class="stat-box">
+      <div class="num">{{ orders|length }}</div>
+      <div class="lbl">Total Orders</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#856404;">{{ orders|selectattr('status','equalto','pending')|list|length }}</div>
+      <div class="lbl">Pending</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#0d6efd;">{{ orders|selectattr('status','equalto','shipped')|list|length }}</div>
+      <div class="lbl">Shipped</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#1e8449;">{{ orders|selectattr('status','equalto','delivered')|list|length }}</div>
+      <div class="lbl">Delivered</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" style="color:#1e8449;">
+        ₹{{ "%.0f"|format(orders|sum(attribute='total_price')) }}
+      </div>
+      <div class="lbl">Total Revenue</div>
+    </div>
+  </div>
+
+    {% for order in orders %}
+    <div class="order-card">
+      <!-- Header -->
+      <div class="order-header">
+        <div>
+          <strong>Order #{{ order.id }}</strong>
+          <span class="text-muted ms-2" style="font-size:13px;">
+            {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}
+          </span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge-status status-{{ order.status }}">
+            {% if order.status == 'pending' %}   ⏳ Pending
+            {% elif order.status == 'accepted' %} ✅ Accepted
+            {% elif order.status == 'rejected' %} ❌ Rejected
+            {% elif order.status == 'shipped' %}  🚚 Shipped
+            {% elif order.status == 'delivered' %}🎉 Delivered
+            {% endif %}
+          </span>
+          <span class="payment-tag">
+            {% if order.payment_method == 'cod' %}💵 Cash on Delivery{% else %}📱 UPI{% endif %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="order-body">
+        <div class="row g-3">
+
+          <!-- Product Info -->
+          <div class="col-md-4">
+            <div class="buyer-info">
+              <div class="label">Product</div>
+              <div class="value">{{ order.product.name }}</div>
+              <div class="label mt-2">Quantity</div>
+              <div class="value">{{ order.quantity_ordered }}</div>
+              <div class="label mt-2">Total Amount</div>
+              <div class="value" style="color:#1e8449;font-size:1.1rem;">₹{{ "%.2f"|format(order.total_price) }}</div>
+            </div>
+          </div>
+
+          <!-- Buyer Info -->
+          <div class="col-md-4">
+            <div class="buyer-info">
+              <div class="label">Buyer Name</div>
+              <div class="value">{{ order.buyer.name }}</div>
+              <div class="label mt-2">Delivery Address</div>
+              <div class="value" style="font-size:13px;">{{ order.delivery_location }}</div>
+              {% if order.payment_method == 'upi' and order.upi_id %}
+              <div class="label mt-2">UPI ID</div>
+              <div class="value">{{ order.upi_id }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Rating (if delivered & rated) -->
+          <div class="col-md-4">
+            {% if order.rating %}
+            <div class="buyer-info">
+              <div class="label">Buyer Rating</div>
+              <div class="rating-stars mt-1">
+                {% for i in range(order.rating.stars) %}⭐{% endfor %}
+                <span style="color:#1a3a2a;font-size:13px;margin-left:4px;">{{ order.rating.stars }}/5</span>
+              </div>
+              {% if order.rating.review %}
+              <div class="mt-2" style="font-size:13px;color:#495057;font-style:italic;">
+                "{{ order.rating.review }}"
+              </div>
+              {% endif %}
+            </div>
+            {% else %}
+            <div style="text-align:center;padding:20px;color:#adb5bd;">
+              {% if order.status == 'delivered' %}
+              <div>⭐ Awaiting buyer rating</div>
+              {% else %}
+              <div style="font-size:36px;">📋</div>
+              <div style="font-size:13px;">No rating yet</div>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-btns">
+          {% if order.status == 'pending' %}
+          <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="accepted">
+            <button type="submit" class="btn-accept" onclick="return confirm('Accept this order?')">
+              ✅ Accept Order
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="rejected">
+            <button type="submit" class="btn-reject" onclick="return confirm('Reject this order?')">
+              ❌ Reject Order
+            </button>
+          </form>
+
+          {% elif order.status == 'accepted' %}
+          <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="shipped">
+            <button type="submit" class="btn-ship" onclick="return confirm('Mark as shipped?')">
+              🚚 Mark as Shipped
+            </button>
+          </form>
+
+          {% elif order.status == 'shipped' %}
+          <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
+            <input type="hidden" name="status" value="delivered">
+            <button type="submit" class="btn-deliver" onclick="return confirm('Mark as delivered?')">
+              🎉 Mark as Delivered
+            </button>
+          </form>
+
+          {% elif order.status == 'delivered' %}
+          <span style="color:#1e8449;font-weight:600;font-size:14px;">
+            ✅ Order completed successfully!
+          </span>
+          {% elif order.status == 'rejected' %}
+          <span style="color:#dc3545;font-size:14px;">Order was rejected.</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <div class="empty-state">
+    <div style="font-size:80px;">📬</div>
+    <h3 class="fw-bold mt-3" style="color:#1a3a2a;">No orders yet</h3>
+    <p class="text-muted">When buyers order your products, they'll appear here.</p>
+    <a href="{{ url_for('marketplace.my_products') }}"
+       class="btn fw-bold mt-3"
+       style="background:linear-gradient(135deg,#2ed573,#1e8449);color:white;border-radius:12px;padding:12px 32px;">
+      🌿 My Products
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

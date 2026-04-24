@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ farmer.name }} — KrishiAI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Farmer Info Card -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex align-items-center gap-4">
+        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+             style="width:70px;height:70px;font-size:2rem;">
+          🌾
+        </div>
+        <div>
+          <h4 class="fw-bold mb-1">{{ farmer.name }}</h4>
+          <span class="badge bg-success">Organic Farmer</span>
+          {% if farmer.farmer_profile %}
+            <p class="text-muted mb-0 mt-1">
+              <i class="bi bi-geo-alt me-1"></i>{{ farmer.farmer_profile.farm_location or 'Location not set' }}
+              &nbsp;|&nbsp;
+              <i class="bi bi-layers me-1"></i>Soil: {{ farmer.farmer_profile.soil_type or 'N/A' }}
+            </p>
+            {% if farmer.farmer_profile.phone %}
+              <p class="mt-1 mb-0">
+                <i class="bi bi-telephone me-1 text-success"></i>
+                <a href="tel:{{ farmer.farmer_profile.phone }}">{{ farmer.farmer_profile.phone }}</a>
+              </p>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Farmer's Products -->
+  <h5 class="fw-semibold mb-3">Products by {{ farmer.name }}</h5>
+
+  {% if products %}
+    <div class="row g-3">
+      {% for p in products %}
+      <div class="col-md-4">
+        <div class="card product-card h-100">
+          {% if p.image_filename %}
+            <img src="/static/uploads/{{ p.image_filename }}" class="card-img-top product-img" alt="{{ p.name }}" />
+          {% else %}
+            <div class="product-img-placeholder"><span>🌿</span></div>
+          {% endif %}
+          <div class="card-body">
+            <h6 class="fw-bold">{{ p.name }}</h6>
+            <p class="text-success fw-bold">₹{{ p.price }} / unit</p>
+            <p class="text-muted small">📦 {{ p.quantity }}</p>
+            {% if p.description %}
+              <p class="small text-muted">{{ p.description }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">This farmer has no products listed yet.</div>
+  {% endif %}
+
+  <a href="{{ url_for('marketplace.listing') }}" class="btn btn-outline-success mt-4">
+    <i class="bi bi-arrow-left me-1"></i>Back to Marketplace
+  </a>
+
+</div>
+{% endblock %}

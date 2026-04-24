@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Crop Roadmaps — धरती रक्षक{% endblock %}
+
+{% block head_extra %}
+<style>
+  :root {
+    --green-dark: #1a3a2a;
+    --green-mid: #2d6a4f;
+    --green-accent: #2ed573;
+    --gold: #f9ca24;
+  }
+
+  .roadmap-hero {
+    background: linear-gradient(135deg, #0d2b1a 0%, #1a5c34 50%, #0d2b1a 100%);
+    padding: 64px 0 48px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .roadmap-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232ed573' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+  .roadmap-hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 12px; position: relative; }
+  .roadmap-hero p  { font-size: 1.15rem; color: rgba(255,255,255,0.8); position: relative; }
+
+  .filter-bar {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 32px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-bar .btn-season {
+    border-radius: 30px;
+    padding: 6px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 2px solid #dee2e6;
+    background: white;
+    color: #495057;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .filter-bar .btn-season:hover,
+  .filter-bar .btn-season.active {
+    border-color: #2d6a4f;
+    background: #2d6a4f;
+    color: white;
+  }
+
+  .crop-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    border: 1px solid #f0f0f0;
+  }
+  .crop-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 36px rgba(45,106,79,0.18);
+    color: inherit;
+  }
+  .crop-card-emoji {
+    font-size: 72px;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 130px;
+  }
+  .crop-card-body {
+    padding: 20px;
+  }
+  .crop-card-body h5 {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+    color: #1a3a2a;
+  }
+  .crop-card-body p {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .crop-meta span {
+    font-size: 12px;
+    background: #f0faf3;
+    color: #2d6a4f;
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-right: 6px;
+    font-weight: 500;
+    border: 1px solid #c3e6cb;
+  }
+  .season-kharif  { background: #fff3cd!important; color: #856404!important; border-color: #ffc107!important; }
+  .season-rabi    { background: #cfe2ff!important; color: #084298!important; border-color: #9ec5fe!important; }
+  .season-zaid    { background: #d1e7dd!important; color: #0a3622!important; border-color: #a3cfbb!important; }
+  .season-year    { background: #e2d9f3!important; color: #4a235a!important; border-color: #c5b3e6!important; }
+
+  .voice-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(46,213,115,0.1);
+    border: 1px solid rgba(46,213,115,0.3);
+    border-radius: 30px;
+    padding: 8px 20px;
+    color: #2ed573;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="roadmap-hero">
+  <div class="container">
+    <h1>🌾 Crop Roadmaps</h1>
+    <p>Step-by-step organic farming guides from seed to harvest</p>
+    <div class="voice-hint">
+      <span>🎤</span> Say <strong>"open roadmap"</strong> or <strong>"search tomato"</strong> with voice
+    </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span style="font-weight:600;color:#495057;font-size:14px;">Filter by Season:</span>
+    <button class="btn-season active" data-filter="all" onclick="filterCrops('all', this)">All Crops</button>
+    <button class="btn-season" data-filter="Kharif" onclick="filterCrops('Kharif', this)">☀️ Kharif</button>
+    <button class="btn-season" data-filter="Rabi" onclick="filterCrops('Rabi', this)">❄️ Rabi</button>
+    <button class="btn-season" data-filter="Zaid" onclick="filterCrops('Zaid', this)">🌤️ Zaid</button>
+    <button class="btn-season" data-filter="Year-round" onclick="filterCrops('Year-round', this)">🔄 Year-round</button>
+  </div>
+
+  {% if crops %}
+  <div class="row g-4" id="crops-grid">
+    {% for crop in crops %}
+    <div class="col-6 col-md-4 col-lg-3 crop-item" data-season="{{ crop.season }}">
+      <a href="{{ url_for('roadmap.detail', slug=crop.slug) }}" class="crop-card h-100">
+        <div class="crop-card-emoji">{{ crop.emoji }}</div>
+        <div class="crop-card-body">
+          <h5>{{ crop.crop_name }}</h5>
+          <p>{{ crop.description[:80] }}...</p>
+          <div class="crop-meta">
+            <span class="season-{{ crop.season | lower | replace('-','') | replace(' ','') }}">
+              {{ crop.season }}
+            </span>
+            {% if crop.duration_days %}
+            <span>{{ crop.duration_days }} days</span>
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <div style="font-size:80px;">🌱</div>
+    <h4 class="text-muted mt-3">No crop roadmaps found.</h4>
+    <p class="text-muted">Run <code>python database/seed.py</code> to populate the database.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterCrops(season, btn) {
+  document.querySelectorAll('.btn-season').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.crop-item').forEach(el => {
+    if (season === 'all' || el.dataset.season === season) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

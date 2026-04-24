@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Add Product — KrishiAI{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <h3 class="fw-bold text-success mb-4">
+        <i class="bi bi-plus-circle me-2"></i>List a New Product
+      </h3>
+
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <form method="POST" action="{{ url_for('marketplace.add_product') }}"
+                enctype="multipart/form-data" id="addProductForm">
+
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">Product Name *</label>
+              <input type="text" class="form-control" id="name" name="name"
+                     placeholder="e.g. Organic Tomatoes" required />
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="price" class="form-label fw-semibold">Price (₹ per unit) *</label>
+                <input type="number" class="form-control" id="price" name="price"
+                       placeholder="e.g. 40" min="0" step="0.01" required />
+              </div>
+              <div class="col-md-6">
+                <label for="quantity" class="form-label fw-semibold">Available Quantity *</label>
+                <input type="text" class="form-control" id="quantity" name="quantity"
+                       placeholder="e.g. 100 kg" required />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="category" class="form-label fw-semibold">Category</label>
+              <select class="form-select" id="category" name="category">
+                <option value="">Select category</option>
+                <option>Vegetables</option>
+                <option>Fruits</option>
+                <option>Grains</option>
+                <option>Pulses</option>
+                <option>Spices</option>
+                <option>Dairy</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label fw-semibold">Description</label>
+              <textarea class="form-control" id="description" name="description"
+                        rows="3" placeholder="Describe your product — growing method, freshness, etc."></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="image" class="form-label fw-semibold">Product Image</label>
+              <input type="file" class="form-control" id="image" name="image"
+                     accept="image/*" onchange="previewImage(event)" />
+              <div id="imgPreview" class="mt-2" style="display:none">
+                <img id="previewEl" src="#" class="img-thumbnail" style="max-height:150px;" />
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-cloud-upload me-1"></i>Add Product
+              </button>
+              <a href="{{ url_for('marketplace.my_products') }}" class="btn btn-outline-secondary">
+                Cancel
+              </a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function previewImage(event) {
+  const preview = document.getElementById('previewEl');
+  const div     = document.getElementById('imgPreview');
+  const file    = event.target.files[0];
+  if (file) {
+    preview.src   = URL.createObjectURL(file);
+    div.style.display = 'block';
+  }
+}
+</script>
+{% endblock %}

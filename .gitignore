@@ -1,0 +1,23 @@
+# Python gitignore for organic farming platform
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.db
+*.sqlite3
+database/farming.db
+static/uploads/*
+!static/uploads/.gitkeep
+ml_models/*.pkl
+*.egg-info/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.log
+instance/
+.webassets-cache
+render_deploy_notes.md

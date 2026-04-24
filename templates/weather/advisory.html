@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Weather Advisory — KrishiAI{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <h2 class="fw-bold text-success mb-1"><i class="bi bi-cloud-sun me-2"></i>Weather Advisory</h2>
+  <p class="text-muted mb-4">Get real-time weather data with smart farming recommendations for irrigation, spraying, and harvesting.</p>
+
+  <!-- Search Form -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <form method="POST" action="{{ url_for('weather.advisory') }}">
+        <div class="input-group">
+          <span class="input-group-text bg-success text-white"><i class="bi bi-geo-alt"></i></span>
+          <input type="text" class="form-control form-control-lg" name="city"
+                 placeholder="Enter city name (e.g. Pune, Mumbai)"
+                 value="{{ city }}" required />
+          <button type="submit" class="btn btn-success btn-lg px-4">
+            <i class="bi bi-search me-1"></i>Get Forecast
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if weather %}
+  <div class="row g-4">
+
+    <!-- Weather Card -->
+    <div class="col-md-5">
+      <div class="card shadow-sm text-center">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-cloud-sun me-1"></i>Current Weather — {{ weather.city }}, {{ weather.country }}
+        </div>
+        <div class="card-body py-4">
+          {% if weather.icon %}
+            <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png"
+                 alt="{{ weather.description }}" />
+          {% else %}
+            <div style="font-size:4rem">
+              {% if 'rain' in weather.description.lower() or 'drizzle' in weather.description.lower() %}🌧
+              {% elif 'storm' in weather.description.lower() %}⛈
+              {% elif 'cloud' in weather.description.lower() %}☁️
+              {% elif 'sunny' in weather.description.lower() or 'clear' in weather.description.lower() %}☀️
+              {% else %}🌤{% endif %}
+            </div>
+          {% endif %}
+          <h3 class="fw-bold text-primary mt-2">{{ weather.temp }}°C</h3>
+          <p class="text-muted mb-3">{{ weather.description }}<br />Feels like {{ weather.feels_like }}°C</p>
+
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="fw-bold">{{ weather.humidity }}%</div>
+              <small class="text-muted">Humidity</small>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ weather.wind_speed }} m/s</div>
+              <small class="text-muted">Wind</small>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ weather.rain_prob }}%</div>
+              <small class="text-muted">Rain Prob.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Farming Advisory -->
+    <div class="col-md-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-success text-white">
+          <i class="bi bi-lightbulb me-1"></i>Smart Farming Advisory
+        </div>
+        <div class="card-body">
+          {% if tips %}
+            {% for tip in tips %}
+              <div class="alert alert-{% if '⚠' in tip or '❄' in tip or '⛈' in tip %}warning
+                {% elif '✅' in tip %}success
+                {% else %}info{% endif %} py-2">
+                {{ tip }}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="alert alert-success">✅ Conditions are normal — proceed with regular farm operations.</div>
+          {% endif %}
+
+          <hr />
+          <h6 class="fw-semibold">📅 General Farming Calendar Tips:</h6>
+          <ul class="small text-muted">
+            <li>Best spray time: early morning (6–9 AM) or evening (4–6 PM)</li>
+            <li>Irrigate when soil feels dry 2 cm below surface</li>
+            <li>Harvest before predicted heavy rainfall to avoid crop loss</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endif %}
+
+  {% if not weather %}
+  <div class="text-center text-muted py-5">
+    <div style="font-size:4rem">🌤</div>
+    <h5 class="mt-3">Enter your city above to get weather advisory</h5>
+    <p>We'll provide smart irrigation and farming tips based on real-time weather.</p>
+    <p class="small">
+      💡 <strong>Note:</strong> Add your OpenWeatherMap API key in <code>config.py</code> for live data.
+      Without it, simulated weather is shown.
+    </p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

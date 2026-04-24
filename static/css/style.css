@@ -1,0 +1,186 @@
+/* ============================================================
+   style.css — KrishiAI Organic Farming Platform
+   Clean Bootstrap 5 + Green agricultural theme
+   ============================================================ */
+
+/* ---- Google Font ---- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --green-dark:   #1b5e20;
+  --green-main:   #2e7d32;
+  --green-light:  #43a047;
+  --green-pale:   #e8f5e9;
+  --text-muted:   #6c757d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f5f5f5;
+  color: #212529;
+}
+
+/* ---- Navbar ---- */
+.bg-green { background-color: var(--green-dark) !important; }
+
+/* ---- Hero Section ---- */
+.hero-section {
+  background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-light) 100%);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---- Feature Cards ---- */
+.feature-card {
+  border: 1px solid #dcedc8;
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+.feature-icon { font-size: 2.5rem; }
+
+/* ---- Product Cards ---- */
+.product-card {
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s;
+  overflow: hidden;
+}
+.product-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,.1);
+}
+.product-img {
+  height: 160px;
+  width: 100%;
+  object-fit: cover;
+}
+.product-img-placeholder {
+  height: 160px;
+  background: var(--green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+/* ---- Stat Cards ---- */
+.stat-card {
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+.stat-num { font-size: 2rem; font-weight: 700; }
+
+/* ---- Hover card ---- */
+.hover-card {
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s, transform 0.2s;
+  color: inherit;
+}
+.hover-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,.1);
+  transform: translateY(-2px);
+}
+
+/* ---- Upload Zone ---- */
+.upload-zone {
+  border: 2px dashed #a5d6a7;
+  border-radius: 10px;
+  padding: 30px 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  background: var(--green-pale);
+  transition: background 0.2s;
+}
+.upload-zone:hover { background: #dcedc8; }
+.upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: none; /* handled by JS click */
+}
+
+/* ---- Chat Window ---- */
+.chat-window {
+  height: 420px;
+  overflow-y: auto;
+  background: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat-msg { display: flex; }
+.user-msg { justify-content: flex-end; }
+.bot-msg  { justify-content: flex-start; }
+
+.bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.user-bubble {
+  background: var(--green-main);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.bot-bubble {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  color: #212529;
+  border-bottom-left-radius: 4px;
+}
+
+/* Typing dots animation */
+.typing-dots span {
+  display: inline-block;
+  width: 8px; height: 8px;
+  margin: 0 2px;
+  background: #aaa;
+  border-radius: 50%;
+  animation: bounce 1s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-6px); }
+}
+
+/* Quick chips */
+.quick-chip {
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  background: #e8f5e9 !important;
+  border: 1px solid #a5d6a7;
+  border-radius: 20px;
+}
+.quick-chip:hover { background: #c8e6c9 !important; }
+
+/* ---- Stats box (landing page) ---- */
+.stat-box { transition: background 0.2s; }
+.stat-box:hover { background: rgba(46,125,50,.08) !important; }
+
+/* ---- Footer ---- */
+.footer { font-size: 0.85rem; }
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 767px) {
+  .hero-section { min-height: 200px; }
+  .stat-num { font-size: 1.5rem; }
+}
