@@ -4,8 +4,8 @@
 {% block content %}
 <div class="container">
 
-  <h2 class="fw-bold text-success mb-1"><i class="bi bi-cpu me-2"></i>Crop Recommendation AI</h2>
-  <p class="text-muted mb-4">
+  <h2 class="fw-bold text-success mb-1"><i class="bi bi-cpu me-2"></i><span data-i18n="crop_heading">Crop Recommendation</span></h2>
+  <p class="text-muted mb-4" data-i18n="crop_subtitle">
     Enter your soil and weather data. Our Random Forest model (trained on 22 crops) will suggest the best crop for you.
   </p>
 
@@ -15,7 +15,7 @@
     <div class="col-lg-5">
       <div class="card shadow-sm">
         <div class="card-header bg-success text-white">
-          <i class="bi bi-input-cursor me-1"></i>Soil & Weather Parameters
+          <i class="bi bi-input-cursor me-1"></i><span data-i18n="crop_heading">Soil & Weather Parameters</span>
         </div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('crop.recommend') }}">
@@ -27,43 +27,43 @@
 
             <div class="row g-3">
               <div class="col-md-4">
-                <label class="form-label">Nitrogen (N)</label>
+                <label class="form-label" data-i18n="crop_nitrogen_label">Nitrogen (N)</label>
                 <input type="number" class="form-control" name="N" step="0.1"
                        placeholder="e.g. 80" required />
               </div>
               <div class="col-md-4">
-                <label class="form-label">Phosphorus (P)</label>
+                <label class="form-label" data-i18n="crop_phosphorus_label">Phosphorus (P)</label>
                 <input type="number" class="form-control" name="P" step="0.1"
                        placeholder="e.g. 45" required />
               </div>
               <div class="col-md-4">
-                <label class="form-label">Potassium (K)</label>
+                <label class="form-label" data-i18n="crop_potassium_label">Potassium (K)</label>
                 <input type="number" class="form-control" name="K" step="0.1"
                        placeholder="e.g. 40" required />
               </div>
               <div class="col-md-6">
-                <label class="form-label">Temperature (°C)</label>
+                <label class="form-label" data-i18n="crop_temperature_label">Temperature (°C)</label>
                 <input type="number" class="form-control" name="temperature" step="0.1"
                        placeholder="e.g. 25" required />
               </div>
               <div class="col-md-6">
-                <label class="form-label">Humidity (%)</label>
+                <label class="form-label" data-i18n="crop_humidity_label">Humidity (%)</label>
                 <input type="number" class="form-control" name="humidity" step="0.1"
                        min="0" max="100" placeholder="e.g. 65" required />
               </div>
               <div class="col-md-6">
-                <label class="form-label">Soil pH</label>
+                <label class="form-label" data-i18n="crop_ph_label">Soil pH</label>
                 <input type="number" class="form-control" name="ph" step="0.01"
                        min="0" max="14" placeholder="e.g. 6.5" required />
               </div>
               <div class="col-md-6">
-                <label class="form-label">Rainfall (mm)</label>
+                <label class="form-label" data-i18n="crop_rainfall_label">Rainfall (mm)</label>
                 <input type="number" class="form-control" name="rainfall" step="0.1"
                        placeholder="e.g. 150" required />
               </div>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mt-4">
+            <button type="submit" class="btn btn-success w-100 mt-4" data-i18n="crop_btn">
               <i class="bi bi-lightning me-1"></i>Recommend Crop
             </button>
 
@@ -96,13 +96,13 @@
     <div class="col-lg-7">
       {% if prediction %}
         <div class="card border-success shadow-sm">
-          <div class="card-header bg-success text-white">
+          <div class="card-header bg-success text-white" data-i18n="crop_result_title">
             <i class="bi bi-check-circle me-1"></i>Recommendation Result
           </div>
           <div class="card-body text-center py-5">
             <div style="font-size:5rem">🌾</div>
             <h2 class="text-success fw-bold mt-2">{{ prediction }}</h2>
-            <p class="text-muted mb-3">Recommended crop for your conditions</p>
+            <p class="text-muted mb-3" data-i18n="crop_top_pick">Recommended crop for your conditions</p>
 
             {% if tip %}
               <div class="alert alert-success text-start">

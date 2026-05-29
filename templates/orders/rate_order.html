@@ -61,7 +61,7 @@
 
 {% block content %}
 <div class="rate-hero">
-  <h1>⭐ Rate Your Order</h1>
+  <h1 data-i18n="rate_order_heading">⭐ Rate Your Order</h1>
   <p style="color:rgba(255,255,255,0.75);">Your feedback helps other buyers and improves farmers</p>
 </div>
 
@@ -73,19 +73,19 @@
       <div class="order-summary">
         <div class="row g-3">
           <div class="col-6">
-            <div class="label">Product</div>
+            <div class="label" data-i18n="rate_order_product">Product</div>
             <div class="value">{{ order.product.name }}</div>
           </div>
           <div class="col-6">
-            <div class="label">Farmer</div>
+            <div class="label" data-i18n="rate_order_farmer">Farmer</div>
             <div class="value">{{ order.farmer.name }}</div>
           </div>
           <div class="col-6">
-            <div class="label">Quantity</div>
+            <div class="label" data-i18n="buyer_orders_col_qty">Quantity</div>
             <div class="value">{{ order.quantity_ordered }}</div>
           </div>
           <div class="col-6">
-            <div class="label">Total Paid</div>
+            <div class="label" data-i18n="buyer_orders_col_total">Total Paid</div>
             <div class="value" style="color:#1e8449;">₹{{ "%.2f"|format(order.total_price) }}</div>
           </div>
         </div>
@@ -93,7 +93,7 @@
 
       <!-- Rating Form -->
       <form method="POST" action="{{ url_for('orders.rate_order', order_id=order.id) }}" id="rating-form">
-        <h5 class="text-center fw-bold mb-0" style="color:#1a3a2a;">How would you rate this product?</h5>
+        <h5 class="text-center fw-bold mb-0" style="color:#1a3a2a;" data-i18n="rate_order_stars_label">How would you rate this product?</h5>
         <div class="star-hint" id="star-hint">Click a star to rate</div>
 
         <!-- Stars (reverse-order for CSS trick) -->
@@ -105,13 +105,14 @@
         </div>
 
         <div class="mb-3 mt-3">
-          <label class="form-label fw-semibold">Write a Review <span class="text-muted fw-normal">(optional)</span></label>
+          <label class="form-label fw-semibold"><span data-i18n="rate_order_review_label">Write a Review</span> <span class="text-muted fw-normal">(optional)</span></label>
           <textarea class="form-control" name="review" rows="4"
+                    data-i18n-placeholder="rate_order_review_ph"
                     placeholder="Share your experience — was the product fresh? Did it arrive on time? Any tips for other buyers?"
                     style="border-radius:12px;"></textarea>
         </div>
 
-        <button type="submit" class="btn-submit-rating" id="submit-btn" disabled>
+        <button type="submit" class="btn-submit-rating" id="submit-btn" disabled data-i18n="rate_order_btn">
           ⭐ Submit Rating
         </button>
       </form>

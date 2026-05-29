@@ -31,8 +31,8 @@
 {% block content %}
 <div class="container">
 
-  <h2 class="fw-bold text-success mb-1"><i class="bi bi-search me-2"></i>Plant Disease Detection</h2>
-  <p class="text-muted mb-4">Upload a clear leaf photo — Gemini Vision AI identifies any plant disease instantly with organic treatment solutions.</p>
+  <h2 class="fw-bold text-success mb-1"><i class="bi bi-search me-2"></i><span data-i18n="disease_heading">Plant Disease Detection</span></h2>
+  <p class="text-muted mb-4" data-i18n="disease_subtitle">Upload a clear leaf photo — Gemini Vision AI identifies any plant disease instantly with organic treatment solutions.</p>
 
   <div class="row g-4">
 
@@ -62,7 +62,7 @@
                    style="max-height:200px;" alt="Preview" />
             </div>
 
-            <button type="submit" class="btn btn-success w-100">
+            <button type="submit" class="btn btn-success w-100" data-i18n="disease_upload_btn">
               <i class="bi bi-lightning me-1"></i>Detect Disease
             </button>
           </form>

@@ -93,7 +93,7 @@
 
 {% block content %}
 <div class="farmer-orders-hero">
-  <h1>📬 Incoming Orders</h1>
+  <h1 data-i18n="farmer_orders_heading">📬 Incoming Orders</h1>
   <p style="color:rgba(255,255,255,0.75);">Manage and fulfill buyer orders</p>
 </div>
 
@@ -160,11 +160,11 @@
           <!-- Product Info -->
           <div class="col-md-4">
             <div class="buyer-info">
-              <div class="label">Product</div>
+              <div class="label" data-i18n="farmer_orders_col_product">Product</div>
               <div class="value">{{ order.product.name }}</div>
-              <div class="label mt-2">Quantity</div>
+              <div class="label mt-2" data-i18n="farmer_orders_col_qty">Quantity</div>
               <div class="value">{{ order.quantity_ordered }}</div>
-              <div class="label mt-2">Total Amount</div>
+              <div class="label mt-2" data-i18n="farmer_orders_col_total">Total Amount</div>
               <div class="value" style="color:#1e8449;font-size:1.1rem;">₹{{ "%.2f"|format(order.total_price) }}</div>
             </div>
           </div>
@@ -172,9 +172,9 @@
           <!-- Buyer Info -->
           <div class="col-md-4">
             <div class="buyer-info">
-              <div class="label">Buyer Name</div>
+              <div class="label" data-i18n="farmer_orders_col_buyer">Buyer Name</div>
               <div class="value">{{ order.buyer.name }}</div>
-              <div class="label mt-2">Delivery Address</div>
+              <div class="label mt-2" data-i18n="farmer_orders_col_delivery">Delivery Address</div>
               <div class="value" style="font-size:13px;">{{ order.delivery_location }}</div>
               {% if order.payment_method == 'upi' and order.upi_id %}
               <div class="label mt-2">UPI ID</div>
@@ -216,13 +216,13 @@
           {% if order.status == 'pending' %}
           <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
             <input type="hidden" name="status" value="accepted">
-            <button type="submit" class="btn-accept" onclick="return confirm('Accept this order?')">
+            <button type="submit" class="btn-accept" onclick="return confirm('Accept this order?')" data-i18n="farmer_orders_accept">
               ✅ Accept Order
             </button>
           </form>
           <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
             <input type="hidden" name="status" value="rejected">
-            <button type="submit" class="btn-reject" onclick="return confirm('Reject this order?')">
+            <button type="submit" class="btn-reject" onclick="return confirm('Reject this order?')" data-i18n="farmer_orders_reject">
               ❌ Reject Order
             </button>
           </form>
@@ -230,7 +230,7 @@
           {% elif order.status == 'accepted' %}
           <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
             <input type="hidden" name="status" value="shipped">
-            <button type="submit" class="btn-ship" onclick="return confirm('Mark as shipped?')">
+            <button type="submit" class="btn-ship" onclick="return confirm('Mark as shipped?')" data-i18n="farmer_orders_ship">
               🚚 Mark as Shipped
             </button>
           </form>
@@ -238,7 +238,7 @@
           {% elif order.status == 'shipped' %}
           <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}">
             <input type="hidden" name="status" value="delivered">
-            <button type="submit" class="btn-deliver" onclick="return confirm('Mark as delivered?')">
+            <button type="submit" class="btn-deliver" onclick="return confirm('Mark as delivered?')" data-i18n="farmer_orders_deliver">
               🎉 Mark as Delivered
             </button>
           </form>
@@ -258,11 +258,12 @@
   {% else %}
   <div class="empty-state">
     <div style="font-size:80px;">📬</div>
-    <h3 class="fw-bold mt-3" style="color:#1a3a2a;">No orders yet</h3>
+    <h3 class="fw-bold mt-3" style="color:#1a3a2a;" data-i18n="farmer_orders_none">No orders yet</h3>
     <p class="text-muted">When buyers order your products, they'll appear here.</p>
     <a href="{{ url_for('marketplace.my_products') }}"
        class="btn fw-bold mt-3"
-       style="background:linear-gradient(135deg,#2ed573,#1e8449);color:white;border-radius:12px;padding:12px 32px;">
+       style="background:linear-gradient(135deg,#2ed573,#1e8449);color:white;border-radius:12px;padding:12px 32px;"
+       data-i18n="farmer_dash_my_listings">
       🌿 My Products
     </a>
   </div>

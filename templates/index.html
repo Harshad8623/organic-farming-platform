@@ -996,9 +996,9 @@
 
 
     <!-- MAIN TITLE -->
-    <h1 class="main-title">धरती रक्षक</h1>
+    <h1 class="main-title" data-i18n="home_hero_title">धरती रक्षक</h1>
 
-    <p class="subtitle-line">
+    <p class="subtitle-line" data-i18n="home_hero_subtitle">
       Organic Farming Advisory &amp; Marketplace Platform <br />
       कृत्रिम बुद्धिमत्ता आधारित सेंद्रिय शेती सल्लागार प्रणाली <br />
       कृत्रिम बुद्धिमत्ता पर आधारित जैविक खेती के लिए सलाह देने वाली प्रणाली
@@ -1054,22 +1054,22 @@
       {% if current_user.is_authenticated %}
       {% if current_user.is_farmer() %}
       <a href="{{ url_for('auth.farmer_dashboard') }}" class="btn-cta-main">
-        <i class="bi bi-speedometer2"></i> My Dashboard
+        <i class="bi bi-speedometer2"></i> <span data-i18n="nav_dashboard">My Dashboard</span>
       </a>
       {% else %}
       <a href="{{ url_for('auth.buyer_dashboard') }}" class="btn-cta-main">
-        <i class="bi bi-speedometer2"></i> My Dashboard
+        <i class="bi bi-speedometer2"></i> <span data-i18n="nav_dashboard">My Dashboard</span>
       </a>
       {% endif %}
       <a href="{{ url_for('marketplace.listing') }}" class="btn-cta-outline">
-        <i class="bi bi-shop"></i> Browse Marketplace
+        <i class="bi bi-shop"></i> <span data-i18n="nav_marketplace">Browse Marketplace</span>
       </a>
       {% else %}
       <a href="{{ url_for('auth.register') }}" class="btn-cta-main">
-        <i class="bi bi-person-plus"></i> Get Started Free
+        <i class="bi bi-person-plus"></i> <span data-i18n="home_get_started">Get Started Free</span>
       </a>
       <a href="{{ url_for('auth.login') }}" class="btn-cta-outline">
-        <i class="bi bi-box-arrow-in-right"></i> Login
+        <i class="bi bi-box-arrow-in-right"></i> <span data-i18n="nav_login">Login</span>
       </a>
       {% endif %}
     </div>
@@ -1106,7 +1106,7 @@
 
   <!-- Features -->
   <span class="section-eyebrow">Platform Features</span>
-  <h2 class="section-heading-2">Everything a Farmer Needs</h2>
+  <h2 class="section-heading-2" data-i18n="home_features_title">Everything a Farmer Needs</h2>
   <p class="section-para" data-i18n="market_subtitle">AI-powered tools built for India's organic farmers and buyers</p>
 
   <div class="row g-4 mb-5">

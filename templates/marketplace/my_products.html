@@ -6,9 +6,9 @@
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold text-success mb-0">
-      <i class="bi bi-list-ul me-2"></i>My Product Listings
+      <i class="bi bi-list-ul me-2"></i><span data-i18n="my_products_heading">My Product Listings</span>
     </h3>
-    <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success">
+    <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success" data-i18n="my_products_add_new">
       <i class="bi bi-plus-circle me-1"></i>Add New
     </a>
   </div>
@@ -18,13 +18,13 @@
       <table class="table table-hover align-middle">
         <thead class="table-success">
           <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Quantity</th>
+            <th data-i18n="my_products_col_image">Image</th>
+            <th data-i18n="my_products_col_name">Name</th>
+            <th data-i18n="my_products_col_category">Category</th>
+            <th data-i18n="my_products_col_price">Price</th>
+            <th data-i18n="my_products_col_qty">Quantity</th>
             <th>Listed On</th>
-            <th>Action</th>
+            <th data-i18n="my_products_col_action">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -51,7 +51,8 @@
               <form action="{{ url_for('marketplace.delete_product', product_id=p.id) }}"
                     method="POST" class="d-inline">
                 <button class="btn btn-outline-danger btn-sm"
-                        onclick="return confirm('Delete this product?')">
+                        onclick="return confirm(I18n.t('my_products_delete_confirm'))"
+                        data-i18n="my_products_delete">
                   <i class="bi bi-trash"></i> Delete
                 </button>
               </form>
@@ -64,8 +65,8 @@
   {% else %}
     <div class="alert alert-info">
       <i class="bi bi-info-circle me-1"></i>
-      You haven't listed any products yet.
-      <a href="{{ url_for('marketplace.add_product') }}">Add your first product →</a>
+      <span data-i18n="my_products_none">You haven't listed any products yet.</span>
+      <a href="{{ url_for('marketplace.add_product') }}" data-i18n="my_products_add_cta">Add your first product →</a>
     </div>
   {% endif %}
 

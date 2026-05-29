@@ -9,10 +9,10 @@
   <div class="alert alert-warning d-flex align-items-center gap-3 mb-4" style="border-radius:14px;border:none;background:linear-gradient(135deg,#fff3cd,#ffe08a);box-shadow:0 2px 12px rgba(255,193,7,0.25);">
     <span style="font-size:2rem;">📬</span>
     <div>
-      <strong>You have {{ pending_orders }} pending order{{ 's' if pending_orders > 1 else '' }}!</strong>
+      <strong>You have {{ pending_orders }} <span data-i18n="farmer_dash_pending_orders">pending order</span>{{ 's' if pending_orders > 1 else '' }}!</strong>
       <br><small class="text-muted">Buyers are waiting — please accept or reject promptly.</small>
     </div>
-    <a href="{{ url_for('orders.farmer_orders') }}" class="btn btn-warning btn-sm ms-auto fw-bold" style="border-radius:10px;">
+    <a href="{{ url_for('orders.farmer_orders') }}" class="btn btn-warning btn-sm ms-auto fw-bold" style="border-radius:10px;" data-i18n="farmer_dash_view_orders">
       View Orders →
     </a>
   </div>
@@ -22,11 +22,11 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h2 class="fw-bold text-success mb-1">
-        <i class="bi bi-house-heart me-2"></i>Farmer Dashboard
+        <i class="bi bi-house-heart me-2"></i><span data-i18n="farmer_dash_heading">Farmer Dashboard</span>
       </h2>
-      <p class="text-muted mb-0">Welcome, {{ current_user.name }} 🌾</p>
+      <p class="text-muted mb-0"><span data-i18n="farmer_dash_welcome">Welcome</span>, {{ current_user.name }} 🌾</p>
     </div>
-    <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success">
+    <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success" data-i18n="farmer_dash_add_product">
       <i class="bi bi-plus-circle me-1"></i>Add Product
     </a>
   </div>
@@ -37,7 +37,7 @@
       <div class="card stat-card text-center">
         <div class="card-body">
           <div class="stat-num text-success">{{ products | length }}</div>
-          <div class="text-muted">My Products</div>
+          <div class="text-muted" data-i18n="farmer_dash_my_products">My Products</div>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <div class="card stat-card text-center">
         <div class="card-body">
           <div class="stat-num text-primary">22</div>
-          <div class="text-muted">Crops Supported</div>
+          <div class="text-muted" data-i18n="farmer_dash_crops_supported">Crops Supported</div>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <div class="card stat-card text-center">
         <div class="card-body">
           <div class="stat-num text-warning">15</div>
-          <div class="text-muted">Diseases in DB</div>
+          <div class="text-muted" data-i18n="farmer_dash_diseases_db">Diseases in DB</div>
         </div>
       </div>
     </div>
@@ -61,21 +61,21 @@
       <div class="card stat-card text-center">
         <div class="card-body">
           <div class="stat-num text-danger">AI</div>
-          <div class="text-muted">Smart Tools</div>
+          <div class="text-muted" data-i18n="farmer_dash_smart_tools">Smart Tools</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- AI Tools Quick Access -->
-  <h5 class="fw-semibold mb-3">AI Tools for Farmers</h5>
+  <h5 class="fw-semibold mb-3" data-i18n="farmer_dash_ai_tools">AI Tools for Farmers</h5>
   <div class="row g-3 mb-4">
     <div class="col-md-3">
       <a href="{{ url_for('crop.recommend') }}" class="card text-decoration-none hover-card h-100">
         <div class="card-body text-center py-3">
           <div class="fs-2">🤖</div>
-          <div class="fw-semibold text-success">Crop AI</div>
-          <small class="text-muted">Best crop for your soil</small>
+          <div class="fw-semibold text-success" data-i18n="nav_crop_ai">Crop AI</div>
+          <small class="text-muted" data-i18n="farmer_dash_crop_ai_desc">Best crop for your soil</small>
         </div>
       </a>
     </div>
@@ -83,8 +83,8 @@
       <a href="{{ url_for('disease.detect') }}" class="card text-decoration-none hover-card h-100">
         <div class="card-body text-center py-3">
           <div class="fs-2">🔬</div>
-          <div class="fw-semibold text-success">Disease Detect</div>
-          <small class="text-muted">Upload leaf photo</small>
+          <div class="fw-semibold text-success" data-i18n="nav_disease">Disease Detect</div>
+          <small class="text-muted" data-i18n="farmer_dash_disease_desc">Upload leaf photo</small>
         </div>
       </a>
     </div>
@@ -92,8 +92,8 @@
       <a href="{{ url_for('weather.advisory') }}" class="card text-decoration-none hover-card h-100">
         <div class="card-body text-center py-3">
           <div class="fs-2">🌦</div>
-          <div class="fw-semibold text-success">Weather</div>
-          <small class="text-muted">Smart irrigation advice</small>
+          <div class="fw-semibold text-success" data-i18n="nav_weather">Weather</div>
+          <small class="text-muted" data-i18n="farmer_dash_weather_desc">Smart irrigation advice</small>
         </div>
       </a>
     </div>
@@ -101,8 +101,8 @@
       <a href="{{ url_for('chatbot.chat') }}" class="card text-decoration-none hover-card h-100">
         <div class="card-body text-center py-3">
           <div class="fs-2">💬</div>
-          <div class="fw-semibold text-success">Chatbot</div>
-          <small class="text-muted">Ask farming questions</small>
+          <div class="fw-semibold text-success" data-i18n="nav_chatbot">Chatbot</div>
+          <small class="text-muted" data-i18n="farmer_dash_chatbot_desc">Ask farming questions</small>
         </div>
       </a>
     </div>
@@ -110,8 +110,8 @@
 
   <!-- My Products Table -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="fw-semibold mb-0">My Product Listings</h5>
-    <a href="{{ url_for('marketplace.my_products') }}" class="btn btn-outline-success btn-sm">
+    <h5 class="fw-semibold mb-0" data-i18n="farmer_dash_my_listings">My Product Listings</h5>
+    <a href="{{ url_for('marketplace.my_products') }}" class="btn btn-outline-success btn-sm" data-i18n="farmer_dash_manage_all">
       Manage All
     </a>
   </div>
@@ -121,11 +121,11 @@
       <table class="table table-hover align-middle">
         <thead class="table-success">
           <tr>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Action</th>
+            <th data-i18n="farmer_dash_col_product">Product</th>
+            <th data-i18n="farmer_dash_col_category">Category</th>
+            <th data-i18n="farmer_dash_col_price">Price</th>
+            <th data-i18n="farmer_dash_col_quantity">Quantity</th>
+            <th data-i18n="farmer_dash_col_action">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -145,7 +145,7 @@
               <form action="{{ url_for('marketplace.delete_product', product_id=p.id) }}"
                     method="POST" class="d-inline">
                 <button type="submit" class="btn btn-outline-danger btn-sm"
-                        onclick="return confirm('Delete this product?')">
+                        onclick="return confirm(I18n.t('my_products_delete_confirm'))">
                   <i class="bi bi-trash"></i>
                 </button>
               </form>
@@ -158,8 +158,8 @@
   {% else %}
     <div class="alert alert-info">
       <i class="bi bi-info-circle me-1"></i>
-      No products yet.
-      <a href="{{ url_for('marketplace.add_product') }}">Add your first product →</a>
+      <span data-i18n="farmer_dash_no_products">No products yet.</span>
+      <a href="{{ url_for('marketplace.add_product') }}" data-i18n="farmer_dash_add_first">Add your first product →</a>
     </div>
   {% endif %}
 
