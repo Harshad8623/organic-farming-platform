@@ -273,8 +273,21 @@
             <div class="rzp-badge">
               🔒 <strong>Secured by Razorpay</strong> — Your payment info is encrypted &amp;
               never stored on our servers.
-              <br><span style="color:#888;font-size:11px;">Using Test Mode — no real money charged.</span>
+              <br><span id="rzp-mode-label" style="color:#888;font-size:11px;">Checking payment gateway status...</span>
             </div>
+
+            <!-- Test Mode Instructions Alert Box -->
+            <div id="test-mode-instructions" class="alert alert-warning border border-warning" style="display:none; border-radius:12px; font-size:13px; margin-bottom:14px; background:#fffbf0; color:#856404; padding:12px;">
+              💡 <strong>How to Complete Test Payment:</strong><br>
+              Scanning the UPI QR code on your phone <strong>will not work</strong> in Test Mode.<br>
+              To complete the checkout successfully, please:
+              <ul class="mb-0 mt-1 pl-3">
+                <li>Choose <strong>Cards</strong> and enter test card number: <code>4111 1111 1111 1111</code> (any expiry/CVV).</li>
+                <li>Or choose <strong>UPI</strong> (enter UPI ID) and use: <code>success@razorpay</code>.</li>
+                <li>Click Pay and select the green <strong>"Success"</strong> button to simulate the payment!</li>
+              </ul>
+            </div>
+
             <button class="btn-razorpay" id="btn-rzp" onclick="startRazorpay()">
               <span class="rzp-logo">rzp</span>
               Pay ₹{{ "%.2f"|format(total) }} with Razorpay
@@ -321,6 +334,25 @@
 // ── Constants injected from Flask ──────────────────────────────────────────
 const RZP_KEY  = "{{ razorpay_key }}";
 const TOTAL_RS = {{ total }};          // e.g. 450.00
+
+// Update Razorpay mode label and instructions dynamically based on key type
+document.addEventListener("DOMContentLoaded", function() {
+  const isTestMode = !RZP_KEY.trim().startsWith("rzp_live");
+  const modeLabel = document.getElementById('rzp-mode-label');
+  const testInstructions = document.getElementById('test-mode-instructions');
+
+  if (modeLabel) {
+    if (isTestMode) {
+      modeLabel.innerHTML = "🔒 <strong>Using Test Mode</strong> — No real money will be charged.";
+      modeLabel.style.color = "#d35400";
+      if (testInstructions) testInstructions.style.display = 'block';
+    } else {
+      modeLabel.innerHTML = "🟢 <strong>Using Live Mode</strong> — Real transaction will be processed.";
+      modeLabel.style.color = "#27ae60";
+      if (testInstructions) testInstructions.style.display = 'none';
+    }
+  }
+});
 
 // ── Payment mode toggle ────────────────────────────────────────────────────
 function selectPayment(mode) {
@@ -397,8 +429,10 @@ async function startRazorpay() {
         email: data.email,
       },
       theme: { color: '#2d6a4f' },
+      callback_url: "{{ url_for('cart.verify_payment', _external=True) }}",
+      redirect: true,
 
-      // Step 3 — On successful payment
+      // Step 3 — On successful payment (fallback callback)
       handler: function(response) {
         document.getElementById('rzp_order_id').value   = response.razorpay_order_id;
         document.getElementById('rzp_payment_id').value = response.razorpay_payment_id;

@@ -20,11 +20,11 @@ cart_bp = Blueprint('cart', __name__, url_prefix='/cart')
 
 
 def _razorpay_client():
-    """Return an authenticated Razorpay client."""
-    return razorpay.Client(
-        auth=(current_app.config['RAZORPAY_KEY_ID'],
-              current_app.config['RAZORPAY_KEY_SECRET'])
-    )
+    """Return an authenticated Razorpay client with defensive whitespace stripping."""
+    key_id = current_app.config.get('RAZORPAY_KEY_ID', '').strip()
+    key_secret = current_app.config.get('RAZORPAY_KEY_SECRET', '').strip()
+    return razorpay.Client(auth=(key_id, key_secret))
+
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +173,7 @@ def create_razorpay_order():
             'notes': {
                 'buyer_id': current_user.id,
                 'buyer_name': current_user.name,
+                'delivery_location': delivery_location,
             }
         })
     except Exception as e:
@@ -183,7 +184,7 @@ def create_razorpay_order():
         'razorpay_order_id': rz_order['id'],
         'amount':            amount_paise,
         'currency':          'INR',
-        'key':               current_app.config['RAZORPAY_KEY_ID'],
+        'key':               current_app.config.get('RAZORPAY_KEY_ID', '').strip(),
         'name':              current_user.name,
         'email':             current_user.email,
     })
@@ -212,8 +213,21 @@ def verify_payment():
         flash('Payment verification failed — incomplete data.', 'danger')
         return redirect(url_for('cart.view_cart'))
 
+    # If delivery_location is missing (due to server redirection), retrieve it from Razorpay order notes
+    if not delivery_location:
+        try:
+            client = _razorpay_client()
+            rz_order = client.order.fetch(razorpay_order_id)
+            delivery_location = rz_order.get('notes', {}).get('delivery_location', '').strip()
+        except Exception as e:
+            current_app.logger.error(f"Failed to fetch order notes for address recovery: {e}")
+
+    if not delivery_location:
+        flash('Payment verification failed — delivery address is missing.', 'danger')
+        return redirect(url_for('cart.view_cart'))
+
     # ---- Signature Verification (HMAC-SHA256) ----
-    key_secret = current_app.config['RAZORPAY_KEY_SECRET'].encode('utf-8')
+    key_secret = current_app.config.get('RAZORPAY_KEY_SECRET', '').strip().encode('utf-8')
     msg        = f'{razorpay_order_id}|{razorpay_payment_id}'.encode('utf-8')
     expected   = hmac.new(key_secret, msg, hashlib.sha256).hexdigest()
 
