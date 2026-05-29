@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block title %}AI Farming Chatbot — KrishiAI{% endblock %}
 
+{% block head_extra %}
+<style>
+  @keyframes mic-pulse-anim {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+  }
+  .pulse-mic {
+    animation: mic-pulse-anim 1.2s infinite;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 
@@ -48,6 +61,9 @@
                    placeholder="Ask a farming question..." autocomplete="off"
                    maxlength="500"
                    onkeypress="if(event.key==='Enter') sendMessage()" />
+            <button onclick="toggleVoiceInput()" class="btn btn-outline-success px-3" id="voiceBtn" title="Speak question">
+              <i class="bi bi-mic" id="voiceIcon"></i>
+            </button>
             <button onclick="sendMessage()" class="btn btn-success px-4" id="sendBtn">
               <i class="bi bi-send"></i>
             </button>
@@ -130,6 +146,75 @@ function appendTyping() {
 function removeTyping(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Speech-to-Text Voice Input Integration
+   ───────────────────────────────────────────────────────────────────────────── */
+let voiceRecognition = null;
+let isVoiceListening = false;
+
+function toggleVoiceInput() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice recognition not supported in this browser. Please use Chrome, Edge, or Safari.');
+    return;
+  }
+
+  const btn = document.getElementById('voiceBtn');
+  const icon = document.getElementById('voiceIcon');
+  const input = document.getElementById('chatInput');
+
+  if (isVoiceListening && voiceRecognition) {
+    voiceRecognition.stop();
+    return;
+  }
+
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.continuous = false;
+  voiceRecognition.interimResults = false;
+
+  // Detect dynamic active language
+  const appLang = (typeof I18n !== 'undefined' ? I18n.getLang() : 'en');
+  if (appLang === 'hi') {
+    voiceRecognition.lang = 'hi-IN';
+  } else if (appLang === 'mr') {
+    voiceRecognition.lang = 'mr-IN';
+  } else {
+    voiceRecognition.lang = 'en-IN';
+  }
+
+  voiceRecognition.onstart = () => {
+    isVoiceListening = true;
+    btn.classList.replace('btn-outline-success', 'btn-danger');
+    btn.classList.add('pulse-mic');
+    icon.classList.replace('bi-mic', 'bi-mic-mute');
+    input.placeholder = (appLang === 'hi' ? 'सुन रहा हूँ... बोलें' : appLang === 'mr' ? 'ऐकत आहे... बोला' : 'Listening... Speak');
+  };
+
+  voiceRecognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    input.value = transcript;
+  };
+
+  voiceRecognition.onerror = (event) => {
+    console.error('Voice input error:', event.error);
+    isVoiceListening = false;
+    btn.classList.replace('btn-danger', 'btn-outline-success');
+    btn.classList.remove('pulse-mic');
+    icon.classList.replace('bi-mic-mute', 'bi-mic');
+    if (typeof I18n !== 'undefined') I18n.apply(input.parentElement);
+  };
+
+  voiceRecognition.onend = () => {
+    isVoiceListening = false;
+    btn.classList.replace('btn-danger', 'btn-outline-success');
+    btn.classList.remove('pulse-mic');
+    icon.classList.replace('bi-mic-mute', 'bi-mic');
+    if (typeof I18n !== 'undefined') I18n.apply(input.parentElement);
+  };
+
+  voiceRecognition.start();
 }
 </script>
 {% endblock %}

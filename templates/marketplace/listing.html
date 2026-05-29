@@ -76,11 +76,16 @@
 <div class="container">
   <!-- Search Bar -->
   <div class="search-bar-wrap">
-    <form method="GET" action="{{ url_for('marketplace.listing') }}" class="row g-2 align-items-center">
+    <form method="GET" action="{{ url_for('marketplace.listing') }}" class="row g-2 align-items-center" id="searchForm">
       <div class="col-md-5">
-        <input type="text" class="form-control" name="search" id="search-input"
-               data-i18n-placeholder="market_search_ph"
-               placeholder="🔍 Search tomato, potato, rice..." value="{{ search }}" />
+        <div class="input-group">
+          <input type="text" class="form-control" name="search" id="search-input"
+                 data-i18n-placeholder="market_search_ph"
+                 placeholder="🔍 Search tomato, potato, rice..." value="{{ search }}" />
+          <button type="button" onclick="toggleSearchVoice()" class="btn btn-outline-success" id="searchVoiceBtn" title="Speak search">
+            <i class="bi bi-mic" id="searchVoiceIcon"></i>
+          </button>
+        </div>
       </div>
       <div class="col-md-3">
         <select class="form-select" name="category">
@@ -193,4 +198,70 @@
   </div>
   {% endif %}
 </div>
+
+<script>
+let searchVoiceRecognition = null;
+let isSearchVoiceListening = false;
+
+function toggleSearchVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice recognition not supported in this browser.');
+    return;
+  }
+
+  const btn = document.getElementById('searchVoiceBtn');
+  const icon = document.getElementById('searchVoiceIcon');
+  const input = document.getElementById('search-input');
+  const form = document.getElementById('searchForm');
+
+  if (isSearchVoiceListening && searchVoiceRecognition) {
+    searchVoiceRecognition.stop();
+    return;
+  }
+
+  searchVoiceRecognition = new SpeechRecognition();
+  searchVoiceRecognition.continuous = false;
+  searchVoiceRecognition.interimResults = false;
+
+  const appLang = (typeof I18n !== 'undefined' ? I18n.getLang() : 'en');
+  if (appLang === 'hi') {
+    searchVoiceRecognition.lang = 'hi-IN';
+  } else if (appLang === 'mr') {
+    searchVoiceRecognition.lang = 'mr-IN';
+  } else {
+    searchVoiceRecognition.lang = 'en-IN';
+  }
+
+  searchVoiceRecognition.onstart = () => {
+    isSearchVoiceListening = true;
+    btn.classList.replace('btn-outline-success', 'btn-danger');
+    icon.classList.replace('bi-mic', 'bi-mic-mute');
+    input.placeholder = (appLang === 'hi' ? 'खोजें बोलकर...' : appLang === 'mr' ? 'शोधा बोलून...' : 'Speaking...');
+  };
+
+  searchVoiceRecognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    input.value = transcript;
+    setTimeout(() => form.submit(), 400);
+  };
+
+  searchVoiceRecognition.onerror = (event) => {
+    console.error('Search voice error:', event.error);
+    isSearchVoiceListening = false;
+    btn.classList.replace('btn-danger', 'btn-outline-success');
+    icon.classList.replace('bi-mic-mute', 'bi-mic');
+    if (typeof I18n !== 'undefined') I18n.apply(form);
+  };
+
+  searchVoiceRecognition.onend = () => {
+    isSearchVoiceListening = false;
+    btn.classList.replace('btn-danger', 'btn-outline-success');
+    icon.classList.replace('bi-mic-mute', 'bi-mic');
+    if (typeof I18n !== 'undefined') I18n.apply(form);
+  };
+
+  searchVoiceRecognition.start();
+}
+</script>
 {% endblock %}

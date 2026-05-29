@@ -14,8 +14,13 @@
     <!-- Input Form -->
     <div class="col-lg-5">
       <div class="card shadow-sm">
-        <div class="card-header bg-success text-white">
-          <i class="bi bi-input-cursor me-1"></i><span data-i18n="crop_heading">Soil & Weather Parameters</span>
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <div>
+            <i class="bi bi-input-cursor me-1"></i><span data-i18n="crop_heading">Soil & Weather Parameters</span>
+          </div>
+          <button type="button" onclick="startFormVoiceFill()" class="btn btn-sm btn-light text-success fw-bold py-1 px-2" style="border-radius:8px;" id="voiceFillBtn">
+            🎙️ Voice Fill
+          </button>
         </div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('crop.recommend') }}">
@@ -139,4 +144,138 @@
 
   </div>
 </div>
+
+<!-- Voice Instructions Overlay -->
+<div id="voiceOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
+  <div class="card p-4 text-center" style="max-width:520px; border-radius:24px; border:2px solid #2ed573; box-shadow:0 12px 40px rgba(46,213,115,0.45);">
+    <div class="fs-1 mb-2">🎙️</div>
+    <h5 class="fw-bold text-success" id="voiceTitle">Listening to Soil Details...</h5>
+    <p class="text-muted small" id="voicePrompt">Please say N, P, K, Temperature, Humidity, pH, and Rainfall values.</p>
+    <div class="alert alert-success text-start py-2 mb-3" style="font-size:12px; line-height:1.6; border-radius:12px;">
+      <strong>English Example:</strong> "Nitrogen 80, Phosphorus 45, Potassium 40, Temperature 25, Humidity 65, pH 6.5, Rainfall 150"<br/>
+      <strong>Hindi Example:</strong> "नाइट्रोजन 80, फास्फोरस 45, पोटेशियम 40, तापमान 25, आर्द्रता 65, पीएच 6.5, बारिश 150"<br/>
+      <strong>Marathi Example:</strong> "नायट्रोजन 80, फॉस्फरस 45, पोटॅशियम 40, तापमान 25, आर्द्रता 65, पीएच 6.5, पाऊस 150"
+    </div>
+    <div class="spinner-grow text-success my-2" role="status">
+      <span class="visually-hidden">Listening...</span>
+    </div>
+    <div class="mt-3">
+      <button type="button" onclick="stopFormVoiceFill()" class="btn btn-outline-danger px-4" style="border-radius:12px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let formVoiceRecognition = null;
+let isFormVoiceListening = false;
+
+function startFormVoiceFill() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice input not supported in this browser. Please use Google Chrome.');
+    return;
+  }
+
+  formVoiceRecognition = new SpeechRecognition();
+  formVoiceRecognition.continuous = false;
+  formVoiceRecognition.interimResults = false;
+
+  const appLang = (typeof I18n !== 'undefined' ? I18n.getLang() : 'en');
+  if (appLang === 'hi') {
+    formVoiceRecognition.lang = 'hi-IN';
+    document.getElementById('voiceTitle').textContent = 'मिट्टी का विवरण सुन रहे हैं...';
+    document.getElementById('voicePrompt').textContent = 'कृपया अपने नाइट्रोजन, फास्फोरस, पोटेशियम आदि का मान बोलें।';
+  } else if (appLang === 'mr') {
+    formVoiceRecognition.lang = 'mr-IN';
+    document.getElementById('voiceTitle').textContent = 'मातीचे विवरण ऐकत आहे...';
+    document.getElementById('voicePrompt').textContent = 'कृपया तुमचे नायट्रोजन, फॉस्फरस, पोटॅशियम इ. चे मूल्य सांगा.';
+  } else {
+    formVoiceRecognition.lang = 'en-IN';
+    document.getElementById('voiceTitle').textContent = 'Listening to Soil Details...';
+    document.getElementById('voicePrompt').textContent = 'Please say N, P, K, Temperature, Humidity, pH, and Rainfall values.';
+  }
+
+  formVoiceRecognition.onstart = () => {
+    isFormVoiceListening = true;
+    document.getElementById('voiceOverlay').style.display = 'flex';
+  };
+
+  formVoiceRecognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const filledFields = parseVoiceInput(transcript);
+    
+    if (filledFields.length > 0) {
+      const msg = appLang === 'hi' 
+        ? `सफलतापूर्वक भरा गया: ${filledFields.join(', ')}` 
+        : appLang === 'mr' 
+        ? `यशस्वीरित्या भरले: ${filledFields.join(', ')}` 
+        : `Successfully filled: ${filledFields.join(', ')}`;
+      alert(msg);
+    } else {
+      const failMsg = appLang === 'hi'
+        ? 'क्षमा करें, हम कोई मान नहीं पहचान पाए। कृपया स्पष्ट रूप से बोलें।'
+        : appLang === 'mr'
+        ? 'क्षमस्व, आम्हाला कोणतेही मूल्य ओळखता आले नाही. कृपया स्पष्ट बोला.'
+        : 'Sorry, could not extract any numeric values. Please speak clearly using NPK keywords.';
+      alert(failMsg);
+    }
+  };
+
+  formVoiceRecognition.onerror = (event) => {
+    console.error('Form voice error:', event.error);
+    stopFormVoiceFill();
+  };
+
+  formVoiceRecognition.onend = () => {
+    stopFormVoiceFill();
+  };
+
+  formVoiceRecognition.start();
+}
+
+function stopFormVoiceFill() {
+  isFormVoiceListening = false;
+  document.getElementById('voiceOverlay').style.display = 'none';
+  if (formVoiceRecognition) {
+    try {
+      formVoiceRecognition.stop();
+    } catch(e){}
+  }
+}
+
+function parseVoiceInput(text) {
+  text = text.toLowerCase();
+  console.log('[Voice Form Parser Input]', text);
+
+  // Mapping keyword regexes to the form input names
+  const mapping = {
+    N: [/n(?:itrogen)?\s*(\d+(\.\d+)?)/, /नाइट्रोजन\s*(\d+(\.\d+)?)/, /नायट्रोजन\s*(\d+(\.\d+)?)/],
+    P: [/p(?:hosphorus)?\s*(\d+(\.\d+)?)/, /फास्फोरस\s*(\d+(\.\d+)?)/, /फॉस्फरस\s*(\d+(\.\d+)?)/],
+    K: [/k(?:otassium)?\s*(\d+(\.\d+)?)/, /पोटेशियम\s*(\d+(\.\d+)?)/, /पोटॅशियम\s*(\d+(\.\d+)?)/],
+    temperature: [/temp(?:erature)?\s*(\d+(\.\d+)?)/, /तापमान\s*(\d+(\.\d+)?)/],
+    humidity: [/humid(?:ity)?\s*(\d+(\.\d+)?)/, /आर्द्रता\s*(\d+(\.\d+)?)/],
+    ph: [/ph\s*(\d+(\.\d+)?)/, /पीएच\s*(\d+(\.\d+)?)/, /माती\s*ph\s*(\d+(\.\d+)?)/],
+    rainfall: [/rain(?:fall)?\s*(\d+(\.\d+)?)/, /वर्षा\s*(\d+(\.\d+)?)/, /पाऊस\s*(\d+(\.\d+)?)/, /बारिश\s*(\d+(\.\d+)?)/]
+  };
+
+  const fieldsFilled = [];
+
+  for (const [key, regexes] of Object.entries(mapping)) {
+    for (const regex of regexes) {
+      const match = text.match(regex);
+      if (match) {
+        const val = parseFloat(match[1]);
+        const inputEl = document.querySelector(`[name="${key}"]`);
+        if (inputEl && !isNaN(val)) {
+          inputEl.value = val;
+          fieldsFilled.push(key);
+          break;
+        }
+      }
+    }
+  }
+
+  return fieldsFilled;
+}
+</script>
 {% endblock %}
