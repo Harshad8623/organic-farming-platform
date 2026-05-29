@@ -13,7 +13,7 @@ from models import db, Product, Order, User
 
 marketplace_bp = Blueprint('marketplace', __name__, url_prefix='/marketplace')
 
-ALLOWED = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+ALLOWED = {'png', 'jpg', 'jpeg', 'webp'}  # gif excluded for consistency
 
 
 def _allowed_file(filename):

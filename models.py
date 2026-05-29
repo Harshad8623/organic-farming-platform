@@ -163,7 +163,7 @@ class Rating(db.Model):
     order_id   = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     buyer_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     farmer_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='SET NULL'), nullable=True)  # nullable: product may be deleted
     stars      = db.Column(db.Integer, nullable=False)  # 1-5
     review     = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

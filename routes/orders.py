@@ -109,6 +109,10 @@ def rate_order(order_id):
         flash('You have already rated this order.', 'info')
         return redirect(url_for('orders.buyer_orders'))
 
+    if order.product_id is None:
+        flash('This product has been removed by the farmer and cannot be rated.', 'warning')
+        return redirect(url_for('orders.buyer_orders'))
+
     if request.method == 'POST':
         try:
             stars = int(request.form.get('stars', 5))
