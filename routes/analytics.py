@@ -75,7 +75,9 @@ def _monthly_registrations():
     # Use real DB count or simulate growth
     total = User.query.count()
     base  = max(1, total // 12)
-    values = [base + random.randint(0, base * 2) for _ in months]
+    # Seed with total so chart is stable until user count changes
+    rng = random.Random(total)
+    values = [base + rng.randint(0, base * 2) for _ in months]
     return _make_chart('line', months, values, 'User Registrations (Last 12 Months)')
 
 

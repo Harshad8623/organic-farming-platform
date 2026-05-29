@@ -473,11 +473,17 @@ const I18n = (() => {
    Language Switcher Button Handler
    (buttons injected by base.html)
 ───────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+function _wireLangButtons() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       I18n.setLang(btn.dataset.lang);
     });
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _wireLangButtons);
+} else {
+  _wireLangButtons();
+}

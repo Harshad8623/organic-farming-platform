@@ -95,6 +95,14 @@ def _fetch_weather(city):
         resp.raise_for_status()
         data = resp.json()
 
+        # rain_prob: use actual rain volume if present, else estimate from cloud cover
+        rain_1h = data.get('rain', {}).get('1h', 0)
+        cloud_cover = data.get('clouds', {}).get('all', 0)
+        # Heuristic: if rain volume > 0, prob is high; else use cloud cover / 1.5 capped at 80
+        if rain_1h > 0:
+            rain_prob = min(95, int(40 + rain_1h * 20))
+        else:
+            rain_prob = min(80, int(cloud_cover / 1.5))
         weather = {
             'city':        data['name'],
             'country':     data['sys']['country'],
@@ -104,7 +112,7 @@ def _fetch_weather(city):
             'description': data['weather'][0]['description'].title(),
             'icon':        data['weather'][0]['icon'],
             'wind_speed':  data['wind']['speed'],
-            'rain_prob':   int(data.get('clouds', {}).get('all', 0)),
+            'rain_prob':   rain_prob,
         }
     else:
         # Simulated data — realistic ranges

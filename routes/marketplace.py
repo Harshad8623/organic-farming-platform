@@ -77,15 +77,19 @@ def add_product():
             image_filename = f"{uuid.uuid4().hex}.{ext}"
             file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
 
-        product = Product(
-            farmer_id=current_user.id,
-            name=name,
-            price=float(price),
-            quantity=quantity,
-            description=description,
-            category=category,
-            image_filename=image_filename
-        )
+        try:
+            product = Product(
+                farmer_id=current_user.id,
+                name=name,
+                price=float(price),
+                quantity=quantity,
+                description=description,
+                category=category,
+                image_filename=image_filename
+            )
+        except (ValueError, TypeError):
+            flash('Price must be a valid number.', 'danger')
+            return render_template('marketplace/add_product.html')
         db.session.add(product)
         db.session.commit()
         flash('Product added successfully!', 'success')

@@ -9,6 +9,7 @@ import os
 import pickle
 import numpy as np
 from flask import Blueprint, render_template, request, current_app, flash
+from flask_login import login_required
 
 crop_bp = Blueprint('crop', __name__, url_prefix='/crop')
 
@@ -122,6 +123,7 @@ def _train_and_save(model_path, encoder_path):
 # Route
 # ---------------------------------------------------------------------------
 @crop_bp.route('/', methods=['GET', 'POST'])
+@login_required
 def recommend():
     prediction = None
     accuracy   = None

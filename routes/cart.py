@@ -62,7 +62,10 @@ def add_to_cart(product_id):
         flash('You cannot buy your own product.', 'warning')
         return redirect(url_for('marketplace.listing'))
 
-    qty = int(request.form.get('quantity', 1))
+    try:
+        qty = int(request.form.get('quantity', 1))
+    except (ValueError, TypeError):
+        qty = 1
     if qty < 1:
         qty = 1
 
@@ -107,7 +110,10 @@ def update_quantity(item_id):
     item = CartItem.query.get_or_404(item_id)
     if item.buyer_id != current_user.id:
         return jsonify({'error': 'Access denied'}), 403
-    qty = int(request.form.get('quantity', 1))
+    try:
+        qty = int(request.form.get('quantity', 1))
+    except (ValueError, TypeError):
+        qty = 1
     if qty < 1:
         db.session.delete(item)
     else:

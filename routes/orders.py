@@ -110,7 +110,10 @@ def rate_order(order_id):
         return redirect(url_for('orders.buyer_orders'))
 
     if request.method == 'POST':
-        stars  = int(request.form.get('stars', 5))
+        try:
+            stars = int(request.form.get('stars', 5))
+        except (ValueError, TypeError):
+            stars = 0
         review = request.form.get('review', '').strip()
 
         if stars < 1 or stars > 5:
