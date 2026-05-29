@@ -12,6 +12,11 @@ gunicorn==21.2.0
 python-dotenv==1.0.0
 razorpay==1.4.2
 
+# ── PostgreSQL (Render persistent database) ───────────────────────────────────
+# Required to connect to Render's free PostgreSQL database.
+# Without this, all data is lost on every restart (SQLite is ephemeral on Render).
+psycopg2-binary==2.9.9
+
 # ── CNN Disease Detection ─────────────────────────────────────────────────────
 # onnxruntime runs the plant_disease_model.onnx for fast offline disease detection.
 # Only ~10MB install. The model is ~13MB. No GPU required for inference.

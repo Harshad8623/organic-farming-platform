@@ -9,23 +9,35 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'krishi-ai-secret-2024-change-in-production')
 
     # -------------------------------------------------------
-    # Database
+    # Database — PostgreSQL on Render, SQLite locally
     # -------------------------------------------------------
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'database', 'farming.db')
+    # On Render: set DATABASE_URL to your PostgreSQL connection string.
+    # Render provides this automatically when you link a PostgreSQL service.
+    # Locally: falls back to SQLite (no setup needed for development).
+    #
+    # IMPORTANT: Render gives DATABASE_URL starting with "postgres://"
+    # but SQLAlchemy needs "postgresql://" — fixed automatically below.
+    _db_url = os.environ.get('DATABASE_URL', '')
+    if _db_url.startswith('postgres://'):
+        _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+
+    SQLALCHEMY_DATABASE_URI = _db_url or (
+        'sqlite:///' + os.path.join(BASE_DIR, 'database', 'farming.db')
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # -------------------------------------------------------
     # File Uploads
     # -------------------------------------------------------
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024          # 16 MB max upload
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}   # gif removed (confuses vision AI)
 
     # -------------------------------------------------------
-    # API Keys  <-- Replace '' with your actual keys
+    # API Keys  <-- set these in Render Environment Variables
     # -------------------------------------------------------
-    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')        # https://aistudio.google.com
-    OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')  # https://openweathermap.org/api
+    GEMINI_API_KEY      = os.environ.get('GEMINI_API_KEY', '')        # https://aistudio.google.com
+    OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')   # https://openweathermap.org/api
 
     # -------------------------------------------------------
     # Razorpay Payment Gateway (Test Mode)
@@ -36,5 +48,5 @@ class Config:
     # -------------------------------------------------------
     # ML model paths
     # -------------------------------------------------------
-    CROP_MODEL_PATH = os.path.join(BASE_DIR, 'ml_models', 'crop_model.pkl')
+    CROP_MODEL_PATH   = os.path.join(BASE_DIR, 'ml_models', 'crop_model.pkl')
     CROP_ENCODER_PATH = os.path.join(BASE_DIR, 'ml_models', 'crop_label_encoder.pkl')
