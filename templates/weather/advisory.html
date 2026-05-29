@@ -4,8 +4,8 @@
 {% block content %}
 <div class="container">
 
-  <h2 class="fw-bold text-success mb-1"><i class="bi bi-cloud-sun me-2"></i>Weather Advisory</h2>
-  <p class="text-muted mb-4">Get real-time weather data with smart farming recommendations for irrigation, spraying, and harvesting.</p>
+  <h2 class="fw-bold text-success mb-1"><i class="bi bi-cloud-sun me-2"></i><span data-i18n="weather_heading">Weather Advisory</span></h2>
+  <p class="text-muted mb-4" data-i18n="weather_subtitle">Get real-time weather data with smart farming recommendations for irrigation, spraying, and harvesting.</p>
 
   <!-- Search Form -->
   <div class="row justify-content-center mb-4">
@@ -14,10 +14,11 @@
         <div class="input-group">
           <span class="input-group-text bg-success text-white"><i class="bi bi-geo-alt"></i></span>
           <input type="text" class="form-control form-control-lg" name="city"
+                 data-i18n-placeholder="weather_search_ph"
                  placeholder="Enter city name (e.g. Pune, Mumbai)"
                  value="{{ city }}" required />
           <button type="submit" class="btn btn-success btn-lg px-4">
-            <i class="bi bi-search me-1"></i>Get Forecast
+            <i class="bi bi-search me-1"></i><span data-i18n="weather_btn">Get Forecast</span>
           </button>
         </div>
       </form>

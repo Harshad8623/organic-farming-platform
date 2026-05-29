@@ -69,8 +69,8 @@
 {% block content %}
 <!-- Hero -->
 <div class="marketplace-hero">
-  <h1>🛍️ Organic Marketplace</h1>
-  <p>Buy directly from verified organic farmers — no middlemen, freshest produce</p>
+  <h1 data-i18n="market_heading">🛍️ Organic Marketplace</h1>
+  <p data-i18n="market_subtitle">Buy directly from verified organic farmers — no middlemen, freshest produce</p>
 </div>
 
 <div class="container">
@@ -79,22 +79,23 @@
     <form method="GET" action="{{ url_for('marketplace.listing') }}" class="row g-2 align-items-center">
       <div class="col-md-5">
         <input type="text" class="form-control" name="search" id="search-input"
+               data-i18n-placeholder="market_search_ph"
                placeholder="🔍 Search tomato, potato, rice..." value="{{ search }}" />
       </div>
       <div class="col-md-3">
         <select class="form-select" name="category">
-          <option value="">All Categories</option>
+          <option value="" data-i18n="market_all_categories">All Categories</option>
           {% for cat in categories %}
             <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-2">
-        <button type="submit" class="btn btn-success w-100 fw-semibold">🔍 Filter</button>
+        <button type="submit" class="btn btn-success w-100 fw-semibold" data-i18n="market_filter_btn">🔍 Filter</button>
       </div>
       {% if search or selected_category %}
       <div class="col-md-2">
-        <a href="{{ url_for('marketplace.listing') }}" class="btn btn-outline-secondary w-100">✕ Clear</a>
+        <a href="{{ url_for('marketplace.listing') }}" class="btn btn-outline-secondary w-100" data-i18n="market_clear_btn">✕ Clear</a>
       </div>
       {% endif %}
     </form>
@@ -104,10 +105,10 @@
   {% if current_user.is_authenticated and current_user.is_farmer() %}
   <div class="mb-4 d-flex gap-2">
     <a href="{{ url_for('marketplace.add_product') }}" class="btn btn-success fw-semibold">
-      <i class="bi bi-plus-circle me-1"></i>Add Product
+      <i class="bi bi-plus-circle me-1"></i><span data-i18n="market_add_product">Add Product</span>
     </a>
     <a href="{{ url_for('marketplace.my_products') }}" class="btn btn-outline-success fw-semibold">
-      <i class="bi bi-list-ul me-1"></i>My Listings
+      <i class="bi bi-list-ul me-1"></i><span data-i18n="market_my_listings">My Listings</span>
     </a>
   </div>
   {% endif %}
@@ -139,7 +140,7 @@
             </span>
             <span class="rating-count">({{ p.ratings|length }})</span>
             {% else %}
-            <span class="rating-count">No ratings yet</span>
+            <span class="rating-count" data-i18n="market_no_ratings">No ratings yet</span>
             {% endif %}
           </div>
 
@@ -162,19 +163,19 @@
               <option value="{{ q }}">{{ q }}</option>
               {% endfor %}
             </select>
-            <button type="submit" class="btn-add-cart">
+            <button type="submit" class="btn-add-cart" data-i18n="market_add_to_cart">
               🛒 Add to Cart
             </button>
           </form>
           {% elif not current_user.is_authenticated %}
-          <a href="{{ url_for('auth.login') }}" class="btn-add-cart mb-2" style="display:block;text-align:center;text-decoration:none;">
+          <a href="{{ url_for('auth.login') }}" class="btn-add-cart mb-2" style="display:block;text-align:center;text-decoration:none;" data-i18n="market_login_to_buy">
             🔐 Login to Buy
           </a>
           {% endif %}
 
           <a href="{{ url_for('marketplace.farmer_detail', farmer_id=p.farmer_id) }}"
              class="btn-contact-farmer">
-            <i class="bi bi-person me-1"></i>Contact Farmer
+            <i class="bi bi-person me-1"></i><span data-i18n="market_contact_farmer">Contact Farmer</span>
           </a>
         </div>
       </div>
@@ -186,8 +187,8 @@
   <div class="text-center py-5">
     <div style="font-size:64px;">🌿</div>
     <h4 class="text-muted mt-3">
-      {% if search %}No products found for "<strong>{{ search }}</strong>".
-      {% else %}No products listed yet.{% endif %}
+      {% if search %}<span data-i18n="market_no_found">No products found for</span> "<strong>{{ search }}</strong>".
+      {% else %}<span data-i18n="market_no_products">No products listed yet.</span>{% endif %}
     </h4>
   </div>
   {% endif %}

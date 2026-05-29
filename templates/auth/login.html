@@ -8,39 +8,42 @@
 
       <div class="card shadow-sm">
         <div class="card-header bg-success text-white text-center py-3">
-          <h4 class="mb-0"><i class="bi bi-box-arrow-in-right me-2"></i>Login</h4>
-          <small>Welcome back to KrishiAI</small>
+          <h4 class="mb-0"><i class="bi bi-box-arrow-in-right me-2"></i><span data-i18n="login_heading">Login</span></h4>
+          <small data-i18n="login_welcome">Welcome back to KrishiAI</small>
         </div>
         <div class="card-body p-4">
 
           <form method="POST" action="{{ url_for('auth.login') }}">
 
             <div class="mb-3">
-              <label for="email" class="form-label">Email Address</label>
+              <label for="email" class="form-label" data-i18n="login_email_label">Email Address</label>
               <input type="email" class="form-control" id="email" name="email"
+                     data-i18n-placeholder="login_email_ph"
                      placeholder="you@example.com" required autofocus />
             </div>
 
             <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
+              <label for="password" class="form-label" data-i18n="login_password_label">Password</label>
               <input type="password" class="form-control" id="password"
-                     name="password" placeholder="Your password" required />
+                     name="password"
+                     data-i18n-placeholder="login_password_ph"
+                     placeholder="Your password" required />
             </div>
 
             <div class="mb-3 form-check">
               <input type="checkbox" class="form-check-input" id="remember" name="remember" />
-              <label class="form-check-label" for="remember">Remember me</label>
+              <label class="form-check-label" for="remember" data-i18n="login_remember">Remember me</label>
             </div>
 
             <button type="submit" class="btn btn-success w-100">
-              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+              <i class="bi bi-box-arrow-in-right me-1"></i><span data-i18n="login_btn">Login</span>
             </button>
           </form>
 
           <hr />
           <p class="text-center mb-0">
-            New here?
-            <a href="{{ url_for('auth.register') }}" class="text-success fw-semibold">Create Account</a>
+            <span data-i18n="login_new">New here?</span>
+            <a href="{{ url_for('auth.register') }}" class="text-success fw-semibold" data-i18n="login_create_acct">Create Account</a>
           </p>
         </div>
       </div>

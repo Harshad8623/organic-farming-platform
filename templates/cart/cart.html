@@ -129,7 +129,7 @@
 
 {% block content %}
 <div class="cart-header">
-  <h1>🛒 My Cart</h1>
+  <h1 data-i18n="cart_heading">🛒 My Cart</h1>
   <p style="color:rgba(255,255,255,0.75);">{{ items|length }} item(s) in your cart</p>
 </div>
 
@@ -209,10 +209,7 @@
             </div>
             {% endfor %}
             <hr />
-            <div class="d-flex justify-content-between fw-bold">
-              <span>Total</span>
-              <span style="color:#1e8449;font-size:1.2rem;">₹{{ "%.2f"|format(total) }}</span>
-            </div>
+            <div class="fw-bold d-flex justify-content-between"><span data-i18n="cart_total">Total</span><span style="color:#1e8449;font-size:1.2rem;">&#x20b9;{{ "%.2f"|format(total) }}</span></div>
           </div>
 
           <!-- Delivery Address (shared) -->
