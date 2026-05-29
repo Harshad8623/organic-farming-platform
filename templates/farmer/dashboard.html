@@ -4,6 +4,20 @@
 {% block content %}
 <div class="container">
 
+  <!-- Pending Orders Alert -->
+  {% if pending_orders and pending_orders > 0 %}
+  <div class="alert alert-warning d-flex align-items-center gap-3 mb-4" style="border-radius:14px;border:none;background:linear-gradient(135deg,#fff3cd,#ffe08a);box-shadow:0 2px 12px rgba(255,193,7,0.25);">
+    <span style="font-size:2rem;">📬</span>
+    <div>
+      <strong>You have {{ pending_orders }} pending order{{ 's' if pending_orders > 1 else '' }}!</strong>
+      <br><small class="text-muted">Buyers are waiting — please accept or reject promptly.</small>
+    </div>
+    <a href="{{ url_for('orders.farmer_orders') }}" class="btn btn-warning btn-sm ms-auto fw-bold" style="border-radius:10px;">
+      View Orders →
+    </a>
+  </div>
+  {% endif %}
+
   <!-- Welcome -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>

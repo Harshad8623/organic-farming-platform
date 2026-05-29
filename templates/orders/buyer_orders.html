@@ -122,7 +122,9 @@
             {% endif %}
           </span>
           <span class="payment-tag">
-            {% if order.payment_method == 'cod' %}💵 COD{% else %}📱 UPI{% endif %}
+            {% if order.payment_method == 'cod' %}💵 COD
+            {% elif order.payment_method == 'razorpay' %}📱 Razorpay
+            {% else %}📱 UPI{% endif %}
           </span>
         </div>
       </div>

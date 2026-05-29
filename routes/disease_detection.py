@@ -12,7 +12,7 @@ from flask_login import login_required
 
 disease_bp = Blueprint('disease', __name__, url_prefix='/disease')
 
-ALLOWED = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+ALLOWED = {'png', 'jpg', 'jpeg', 'webp'}  # gif removed: animated GIFs confuse vision AI
 
 
 def _allowed(filename):
@@ -50,5 +50,13 @@ def detect():
             result = predict_disease(save_path, api_key=api_key)
         except Exception as e:
             flash(f'Detection error: {e}', 'danger')
+        finally:
+            # Clean up: delete temp disease image after analysis (prevent disk fill)
+            try:
+                if os.path.exists(save_path):
+                    os.remove(save_path)
+                    image_url = None  # no longer available to display
+            except Exception:
+                pass  # non-critical; leave file if deletion fails
 
     return render_template('disease/detection.html', result=result, image_url=image_url)

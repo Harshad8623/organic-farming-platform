@@ -68,6 +68,18 @@ def add_to_cart(product_id):
         qty = 1
     if qty < 1:
         qty = 1
+    # Sensible upper cap to prevent abuse
+    if qty > 500:
+        qty = 500
+
+    # Try to extract numeric stock from product.quantity string (e.g. '100', '50 kg')
+    import re as _re
+    stock_match = _re.search(r'\d+', str(product.quantity))
+    if stock_match:
+        stock_available = int(stock_match.group())
+        if qty > stock_available:
+            flash(f'Only {product.quantity} of "{product.name}" is available.', 'warning')
+            qty = stock_available
 
     existing = CartItem.query.filter_by(
         buyer_id=current_user.id,
@@ -75,7 +87,12 @@ def add_to_cart(product_id):
     ).first()
 
     if existing:
-        existing.quantity += qty
+        new_total = existing.quantity + qty
+        # Re-check against stock after combining
+        if stock_match and new_total > stock_available:
+            new_total = stock_available
+            flash(f'Cart updated to maximum available stock: {product.quantity}.', 'info')
+        existing.quantity = new_total
     else:
         item = CartItem(buyer_id=current_user.id, product_id=product_id, quantity=qty)
         db.session.add(item)

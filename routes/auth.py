@@ -91,6 +91,9 @@ def login():
             login_user(user, remember=request.form.get('remember') == 'on')
             flash(f'Welcome back, {user.name}!', 'success')
             next_page = request.args.get('next')
+            # Security: Only allow relative redirects (prevent open redirect)
+            if next_page and (not next_page.startswith('/') or next_page.startswith('//')):
+                next_page = None
             return redirect(next_page or _dashboard_url(user))
         else:
             flash('Invalid email or password.', 'danger')
@@ -129,9 +132,14 @@ def farmer_dashboard():
     if not current_user.is_farmer():
         flash('Access denied.', 'danger')
         return redirect(url_for('auth.buyer_dashboard'))
-    from models import Product
+    from models import Product, Order
     products = Product.query.filter_by(farmer_id=current_user.id).all()
-    return render_template('farmer/dashboard.html', products=products)
+    pending_orders = Order.query.filter_by(
+        farmer_id=current_user.id, status='pending'
+    ).count()
+    return render_template('farmer/dashboard.html',
+                           products=products,
+                           pending_orders=pending_orders)
 
 
 @auth_bp.route('/buyer/dashboard')

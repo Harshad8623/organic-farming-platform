@@ -146,7 +146,9 @@
             {% endif %}
           </span>
           <span class="payment-tag">
-            {% if order.payment_method == 'cod' %}💵 Cash on Delivery{% else %}📱 UPI{% endif %}
+            {% if order.payment_method == 'cod' %}💵 Cash on Delivery
+            {% elif order.payment_method == 'razorpay' %}📱 Razorpay
+            {% else %}📱 UPI{% endif %}
           </span>
         </div>
       </div>
