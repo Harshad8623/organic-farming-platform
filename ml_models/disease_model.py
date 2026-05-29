@@ -338,8 +338,8 @@ def predict_disease(image_path, api_key=None):
     Predict plant disease from an image.
 
     Priority chain:
-      1. CNN (PlantVillage)  — if model files exist (plant_disease_model.tflite)
-                               Accuracy: ~99% on PlantVillage test set
+      1. CNN (PlantVillage)  — if model files exist (plant_disease_model.onnx)
+                               Accuracy: ~95-99% on trained diseases
                                Works offline, no API key needed
       2. Gemini Vision AI    — if GEMINI_API_KEY is set
                                Accuracy: ~85-92% on real-world photos

@@ -33,7 +33,7 @@ def detect():
             return render_template('disease/detection.html')
 
         if not _allowed(file.filename):
-            flash('Allowed formats: PNG, JPG, JPEG, GIF, WEBP.', 'danger')
+            flash('Allowed formats: PNG, JPG, JPEG, WEBP.', 'danger')
             return render_template('disease/detection.html')
 
         # Save uploaded image

@@ -13,9 +13,8 @@ python-dotenv==1.0.0
 razorpay==1.4.2
 
 # ── CNN Disease Detection ─────────────────────────────────────────────────────
-# tflite-runtime is a lightweight TFLite inference library (~5MB).
-# It loads the plant_disease_model.tflite file for fast, offline disease detection.
-# Full TensorFlow (~450MB) is only needed for TRAINING — run train_plant_disease.py locally.
-# If tflite-runtime is not available, falls back to full tensorflow (if installed),
-# then falls back to Gemini Vision AI, then Demo mode.
-tflite-runtime==2.14.0
+# onnxruntime runs the plant_disease_model.onnx for fast offline disease detection.
+# Only ~10MB install. The model is ~13MB. No GPU required for inference.
+# Training requires PyTorch (local only — not deployed to Render):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+onnxruntime==1.17.1
