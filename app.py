@@ -89,10 +89,17 @@ def create_app():
         return render_template('index.html')
 
     # -----------------------------------------------------------------------
-    # Create DB tables on first run
+    # Create DB tables and auto-seed if empty on first run
     # -----------------------------------------------------------------------
     with app.app_context():
         db.create_all()
+        try:
+            if User.query.count() == 0:
+                from database.seed import seed_database
+                seed_database()
+                print("🌱 Database auto-seeded successfully!")
+        except Exception as e:
+            app.logger.warning(f"Auto-seeding skipped or failed: {e}")
 
     return app
 

@@ -16,7 +16,7 @@ from app import create_app
 from models import db, User, FarmerProfile, BuyerProfile, CropRoadmap
 from werkzeug.security import generate_password_hash
 
-app = create_app()
+# App will be created inside __main__ context or passed by caller.
 
 # ---------------------------------------------------------------------------
 # Crop Roadmap data
@@ -619,7 +619,7 @@ CROPS = [
 ]
 
 
-with app.app_context():
+def seed_database():
     db.create_all()
 
     # ---- Seed Farmer ----
@@ -692,3 +692,8 @@ with app.app_context():
     print('\nTest Credentials:')
     print('  Farmer: farmer@test.com  / 123456')
     print('  Buyer:  buyer@test.com   / 123456')
+
+if __name__ == '__main__':
+    app = create_app()
+    with app.app_context():
+        seed_database()

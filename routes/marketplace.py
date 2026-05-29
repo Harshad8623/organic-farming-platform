@@ -9,7 +9,7 @@ import uuid
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from models import db, Product, User
+from models import db, Product, Order, User
 
 marketplace_bp = Blueprint('marketplace', __name__, url_prefix='/marketplace')
 
@@ -123,6 +123,24 @@ def delete_product(product_id):
         flash('You can only delete your own products.', 'danger')
         return redirect(url_for('marketplace.my_products'))
 
+    # Check for orders linked to this product
+    active_statuses = ('pending', 'accepted', 'shipped')
+    active_orders = Order.query.filter(
+        Order.product_id == product_id,
+        Order.status.in_(active_statuses)
+    ).count()
+
+    if active_orders > 0:
+        flash(
+            f'Cannot delete "{product.name}" — it has {active_orders} active order(s) '
+            '(pending / accepted / shipped). Please resolve those orders first.',
+            'danger'
+        )
+        return redirect(url_for('marketplace.my_products'))
+
+    # Delete completed / rejected orders first to satisfy the NOT NULL FK constraint
+    Order.query.filter_by(product_id=product_id).delete(synchronize_session=False)
+
     # Remove image file if it exists
     if product.image_filename:
         img_path = os.path.join(current_app.config['UPLOAD_FOLDER'], product.image_filename)
@@ -131,7 +149,7 @@ def delete_product(product_id):
 
     db.session.delete(product)
     db.session.commit()
-    flash('Product deleted.', 'success')
+    flash('Product deleted successfully.', 'success')
     return redirect(url_for('marketplace.my_products'))
 
 
