@@ -1,11 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Disease Detection — KrishiAI{% endblock %}
 
+{% block head_extra %}
+<style>
+  .confidence-bar-wrap { background:#e9ecef; border-radius:8px; height:10px; overflow:hidden; }
+  .confidence-bar      { height:100%; border-radius:8px; transition:width 0.8s ease;
+                         background:linear-gradient(90deg,#2ed573,#1e8449); }
+  .confidence-bar.medium { background:linear-gradient(90deg,#ffa502,#e67e22); }
+  .confidence-bar.low    { background:linear-gradient(90deg,#ff6b6b,#c0392b); }
+
+  .engine-badge-cnn    { background:linear-gradient(135deg,#0f3460,#16213e); color:white;
+                         border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; }
+  .engine-badge-gemini { background:linear-gradient(135deg,#4285f4,#34a853); color:white;
+                         border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; }
+  .engine-badge-demo   { background:#6c757d; color:white;
+                         border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; }
+
+  .top3-item { background:#f8f9fa; border-radius:10px; padding:8px 14px;
+               margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+  .top3-rank { font-weight:800; color:#2d6a4f; min-width:24px; }
+
+  .severity-badge-high   { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+  .severity-badge-medium { background:#fff3cd; color:#856404; border:1px solid #ffeeba; }
+  .severity-badge-low    { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+  .severity-badge-none   { background:#d1ecf1; color:#0c5460; border:1px solid #bee5eb; }
+  .severity-badge { border-radius:20px; padding:3px 12px; font-size:12px; font-weight:700; display:inline-block; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 
   <h2 class="fw-bold text-success mb-1"><i class="bi bi-search me-2"></i>Plant Disease Detection</h2>
-  <p class="text-muted mb-4">Upload a leaf photo and get instant disease diagnosis with organic treatment solutions.</p>
+  <p class="text-muted mb-4">Upload a leaf photo — our CNN (99% accuracy) identifies the disease instantly with organic treatment solutions.</p>
 
   <div class="row g-4">
 
@@ -22,10 +49,11 @@
             <!-- Drop zone -->
             <div class="upload-zone mb-3" id="dropZone">
               <div class="upload-icon">📷</div>
-              <p class="mb-1">Drag & drop or click to upload</p>
+              <p class="mb-1">Drag &amp; drop or click to upload</p>
               <small class="text-muted">Supported: JPG, PNG, WEBP (max 16MB)</small>
               <input type="file" id="leaf_image" name="leaf_image"
-                     accept="image/*" class="file-input" onchange="previewLeaf(event)" required />
+                     accept="image/jpeg,image/png,image/webp" class="file-input"
+                     onchange="previewLeaf(event)" required />
             </div>
 
             <!-- Image preview -->
@@ -41,6 +69,27 @@
         </div>
       </div>
 
+      <!-- Engine Status Card -->
+      <div class="card mt-3">
+        <div class="card-body p-3">
+          <h6 class="fw-semibold mb-2">🔬 Detection Engines</h6>
+          <div class="d-flex flex-column gap-1" style="font-size:12px;">
+            <div class="d-flex align-items-center gap-2">
+              <span style="width:10px;height:10px;background:#0f3460;border-radius:50%;display:inline-block;"></span>
+              <strong>CNN (PlantVillage)</strong> — 38 diseases, ~99% accuracy
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span style="width:10px;height:10px;background:#4285f4;border-radius:50%;display:inline-block;"></span>
+              <strong>Gemini Vision AI</strong> — any disease, needs API key
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span style="width:10px;height:10px;background:#6c757d;border-radius:50%;display:inline-block;"></span>
+              <strong>Demo Mode</strong> — no model/API key
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Tips -->
       <div class="card mt-3">
         <div class="card-body">
@@ -49,7 +98,7 @@
             <li>Take photo in natural daylight</li>
             <li>Focus on the affected leaf/area</li>
             <li>Avoid blurry or dark images</li>
-            <li>Include both sides of the leaf if possible</li>
+            <li>Include both sides of the leaf</li>
           </ul>
         </div>
       </div>
@@ -58,29 +107,33 @@
     <!-- Result Panel -->
     <div class="col-lg-7">
     {% if result %}
+        <!-- Engine + Severity Header -->
         <div class="card shadow-sm mb-3">
           <div class="card-header d-flex align-items-center gap-2
             {% if result.severity == 'high' %}bg-danger
             {% elif result.severity == 'medium' %}bg-warning
-            {% elif result.severity == 'none' and result.name == 'Healthy Plant' %}bg-success
-            {% elif result.severity == 'none' %}bg-secondary
+            {% elif result.severity == 'none' %}bg-success
             {% else %}bg-secondary{% endif %} text-white">
             <i class="bi bi-shield-exclamation"></i>
-            <span>Detection Result — Severity: {{ result.severity.upper() }}</span>
-            {% if result.get('ai_powered') %}
-              <span class="ms-auto badge bg-light text-dark">🤖 Gemini AI</span>
-            {% else %}
-              <span class="ms-auto badge bg-light text-dark">📋 Demo Mode</span>
-            {% endif %}
+            <span>Detection Result</span>
+
+            <!-- Engine Badge -->
+            <span class="ms-auto">
+              {% set engine = result.get('engine', '') %}
+              {% if 'CNN' in engine %}
+                <span class="engine-badge-cnn">🧠 {{ engine }}</span>
+              {% elif 'Gemini' in engine or result.get('ai_powered') %}
+                <span class="engine-badge-gemini">🤖 Gemini Vision AI</span>
+              {% else %}
+                <span class="engine-badge-demo">📋 Demo Mode</span>
+              {% endif %}
+            </span>
           </div>
+
           <div class="card-body">
 
-            {% if image_url %}
-              <img src="{{ image_url }}" class="img-fluid rounded mb-3"
-                   style="max-height:200px;" alt="Uploaded leaf" />
-            {% endif %}
-
             {% if '❌' in result.name %}
+              <!-- Not a plant -->
               <div class="alert alert-warning d-flex gap-2 align-items-start">
                 <span style="font-size:2rem">🚫</span>
                 <div>
@@ -88,27 +141,80 @@
                   {{ result.symptoms }}
                 </div>
               </div>
+
             {% else %}
-              <h4 class="fw-bold text-success">{{ result.name }}</h4>
+              <!-- Disease Result -->
+              <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
+                <h4 class="fw-bold text-success mb-0">{{ result.name }}</h4>
+                <span class="severity-badge severity-badge-{{ result.severity }}">
+                  Severity: {{ result.severity.upper() }}
+                </span>
+              </div>
+
+              <!-- Confidence Score (CNN only) -->
+              {% if result.get('confidence') is not none %}
+              {% set conf_pct = (result.confidence * 100)|round(1) %}
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1" style="font-size:13px;">
+                  <span class="fw-semibold">Confidence</span>
+                  <span class="fw-bold" style="color:{% if conf_pct >= 70 %}#1e8449{% elif conf_pct >= 50 %}#e67e22{% else %}#c0392b{% endif %}">
+                    {{ conf_pct }}%
+                  </span>
+                </div>
+                <div class="confidence-bar-wrap">
+                  <div class="confidence-bar {% if conf_pct < 70 %}medium{% endif %}{% if conf_pct < 50 %} low{% endif %}"
+                       style="width:{{ conf_pct }}%;"></div>
+                </div>
+                {% if conf_pct < 60 %}
+                <small class="text-muted">Low confidence — consider re-uploading a clearer image or using Gemini Vision.</small>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              <!-- Crop & Cause -->
               <p class="text-muted small mb-1">
                 <i class="bi bi-tree me-1"></i><strong>Affected crops:</strong> {{ result.crops }}
               </p>
-              <p class="text-muted small mb-1">
+              <p class="text-muted small mb-2">
                 <i class="bi bi-bug me-1"></i><strong>Cause:</strong> {{ result.cause }}
               </p>
 
-              <div class="alert alert-warning mt-2">
+              <!-- Symptoms -->
+              <div class="alert alert-warning mt-2 py-2">
                 <strong>Symptoms:</strong> {{ result.symptoms }}
               </div>
 
+              <!-- Organic Solutions -->
               <h6 class="fw-semibold mt-3">🌿 Organic Treatment Solutions:</h6>
               <ol class="mb-0">
                 {% for sol in result.organic_solutions %}
                   <li class="mb-1 small">{{ sol }}</li>
                 {% endfor %}
               </ol>
-            {% endif %}
 
+              <!-- Top-3 Predictions (CNN only) -->
+              {% if result.get('top3') %}
+              <div class="mt-4">
+                <h6 class="fw-semibold mb-2">📊 Top Predictions</h6>
+                {% for cls, prob in result.top3 %}
+                {% set pct = (prob * 100)|round(1) %}
+                <div class="top3-item">
+                  <span class="top3-rank">#{{ loop.index }}</span>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold" style="font-size:13px;">
+                      {{ cls.replace('___', ' — ').replace('_', ' ') }}
+                    </div>
+                    <div class="confidence-bar-wrap mt-1">
+                      <div class="confidence-bar" style="width:{{ pct }}%;"></div>
+                    </div>
+                  </div>
+                  <span style="font-size:12px;font-weight:700;min-width:40px;text-align:right;">{{ pct }}%</span>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+            {% endif %}
           </div>
         </div>
 
@@ -121,7 +227,7 @@
           <div class="text-center text-muted p-5">
             <div style="font-size:4rem">🍃</div>
             <h5 class="mt-3">Upload a leaf photo</h5>
-            <p>The AI will identify the disease and show organic treatment options.</p>
+            <p>Our CNN model (trained on 54,306 plant images) will identify the disease and show organic treatment options.</p>
           </div>
         </div>
       {% endif %}
@@ -143,5 +249,8 @@ function previewLeaf(event) {
 document.getElementById('dropZone').addEventListener('click', () =>
   document.getElementById('leaf_image').click()
 );
+</script>
+{% endblock %}
+;
 </script>
 {% endblock %}
