@@ -29,9 +29,21 @@ def register():
         confirm  = request.form.get('confirm_password', '')
         role     = request.form.get('role', 'buyer')
 
+        # Validate role — only farmer or buyer are allowed
+        if role not in ('farmer', 'buyer'):
+            role = 'buyer'  # Default to buyer for any invalid role attempt
+
         # Basic validation
         if not name or not email or not password:
             flash('All fields are required.', 'danger')
+            return render_template('auth/register.html')
+
+        if len(name.strip()) < 2:
+            flash('Name must be at least 2 characters.', 'danger')
+            return render_template('auth/register.html')
+
+        if len(password) < 6:
+            flash('Password must be at least 6 characters.', 'danger')
             return render_template('auth/register.html')
 
         if password != confirm:

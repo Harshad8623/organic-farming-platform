@@ -126,7 +126,7 @@ class Order(db.Model):
     id                = db.Column(db.Integer, primary_key=True)
     buyer_id          = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     farmer_id         = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id        = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    product_id        = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=True)  # nullable: product may be deleted
     quantity_ordered  = db.Column(db.Integer, nullable=False, default=1)
     total_price       = db.Column(db.Float, nullable=False)
     delivery_location = db.Column(db.String(500), nullable=False)

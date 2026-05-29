@@ -167,6 +167,10 @@ def ask():
     if not question:
         return jsonify({'answer': 'Please type a question.'})
 
+    # Limit message length to prevent API quota abuse
+    if len(question) > 500:
+        return jsonify({'answer': 'Please keep your question under 500 characters.'})
+
     # Strip whitespace from key (handles accidental spaces in .env)
     api_key = (current_app.config.get('GEMINI_API_KEY', '') or '').strip()
 

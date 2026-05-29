@@ -142,8 +142,13 @@ def delete_product(product_id):
         )
         return redirect(url_for('marketplace.my_products'))
 
-    # Delete completed / rejected orders first to satisfy the NOT NULL FK constraint
-    Order.query.filter_by(product_id=product_id).delete(synchronize_session=False)
+    # Preserve order history: set product_id to NULL on completed/rejected orders
+    # so buyers don't lose their purchase history and ratings remain intact
+    from models import Order as _Order
+    db.session.execute(
+        db.text('UPDATE orders SET product_id = NULL WHERE product_id = :pid AND status IN (:s1, :s2)'),
+        {'pid': product_id, 's1': 'delivered', 's2': 'rejected'}
+    )
 
     # Remove image file if it exists
     if product.image_filename:
@@ -163,6 +168,9 @@ def delete_product(product_id):
 @marketplace_bp.route('/farmer/<int:farmer_id>')
 def farmer_detail(farmer_id):
     """Buyer views farmer's profile and products."""
-    farmer   = User.query.get_or_404(farmer_id)
+    from flask import abort
+    farmer = db.session.get(User, farmer_id)
+    if not farmer:
+        abort(404)
     products = Product.query.filter_by(farmer_id=farmer_id).all()
     return render_template('marketplace/farmer_detail.html', farmer=farmer, products=products)

@@ -46,6 +46,7 @@
             <input type="text" id="chatInput" class="form-control"
                    data-i18n-placeholder="chatbot_ph"
                    placeholder="Ask a farming question..." autocomplete="off"
+                   maxlength="500"
                    onkeypress="if(event.key==='Enter') sendMessage()" />
             <button onclick="sendMessage()" class="btn btn-success px-4" id="sendBtn">
               <i class="bi bi-send"></i>
