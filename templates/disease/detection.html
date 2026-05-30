@@ -137,15 +137,15 @@
               <div class="alert alert-warning d-flex gap-2 align-items-start">
                 <span style="font-size:2rem">🚫</span>
                 <div>
-                  <strong>{{ result.name }}</strong><br>
-                  {{ result.symptoms }}
+                  <strong data-translate>{{ result.name }}</strong><br>
+                  <span data-translate>{{ result.symptoms }}</span>
                 </div>
               </div>
 
             {% else %}
               <!-- Disease Result -->
               <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
-                <h4 class="fw-bold text-success mb-0">{{ result.name }}</h4>
+                <h4 class="fw-bold text-success mb-0" data-translate>{{ result.name }}</h4>
                 <span class="severity-badge severity-badge-{{ result.severity }}">
                   Severity: {{ result.severity.upper() }}
                 </span>
@@ -166,29 +166,29 @@
                        style="width:{{ conf_pct }}%;"></div>
                 </div>
                 {% if conf_pct < 60 %}
-                <small class="text-muted">Low confidence — consider re-uploading a clearer image or using Gemini Vision.</small>
+                <small class="text-muted" data-translate>Low confidence — consider re-uploading a clearer image or using Gemini Vision.</small>
                 {% endif %}
               </div>
               {% endif %}
 
               <!-- Crop & Cause -->
               <p class="text-muted small mb-1">
-                <i class="bi bi-tree me-1"></i><strong>Affected crops:</strong> {{ result.crops }}
+                <i class="bi bi-tree me-1"></i><strong>Affected crops:</strong> <span data-translate>{{ result.crops }}</span>
               </p>
               <p class="text-muted small mb-2">
-                <i class="bi bi-bug me-1"></i><strong>Cause:</strong> {{ result.cause }}
+                <i class="bi bi-bug me-1"></i><strong>Cause:</strong> <span data-translate>{{ result.cause }}</span>
               </p>
 
               <!-- Symptoms -->
               <div class="alert alert-warning mt-2 py-2">
-                <strong>Symptoms:</strong> {{ result.symptoms }}
+                <strong>Symptoms:</strong> <span data-translate>{{ result.symptoms }}</span>
               </div>
 
               <!-- Organic Solutions -->
               <h6 class="fw-semibold mt-3">🌿 Organic Treatment Solutions:</h6>
               <ol class="mb-0">
                 {% for sol in result.organic_solutions %}
-                  <li class="mb-1 small">{{ sol }}</li>
+                  <li class="mb-1 small" data-translate>{{ sol }}</li>
                 {% endfor %}
               </ol>
 

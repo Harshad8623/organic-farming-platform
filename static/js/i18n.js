@@ -1040,6 +1040,9 @@ const I18n = (() => {
   let currentLang = localStorage.getItem(STORAGE_KEY) || DEFAULT_LANG;
   if (!SUPPORTED.includes(currentLang)) currentLang = DEFAULT_LANG;
 
+  /* Registered language-change listeners */
+  const _listeners = [];
+
   /** Return translated string for key in current language */
   function t(key, lang) {
     const l = lang || currentLang;
@@ -1091,9 +1094,16 @@ const I18n = (() => {
     currentLang = lang;
     localStorage.setItem(STORAGE_KEY, lang);
     apply();
+    /* Notify all registered listeners (e.g. DynamicTranslator) */
+    _listeners.forEach(fn => { try { fn(lang); } catch(e) {} });
   }
 
   function getLang() { return currentLang; }
+
+  /** Register a callback that fires whenever language changes */
+  function onLangChange(fn) {
+    if (typeof fn === 'function') _listeners.push(fn);
+  }
 
   /* Auto-apply on DOM ready */
   if (document.readyState === 'loading') {
@@ -1102,7 +1112,7 @@ const I18n = (() => {
     apply();
   }
 
-  return { t, apply, setLang, getLang };
+  return { t, apply, setLang, getLang, onLangChange };
 })();
 
 /* ─────────────────────────────────────────────

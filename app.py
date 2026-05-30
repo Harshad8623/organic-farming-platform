@@ -69,6 +69,7 @@ def create_app():
     from routes.roadmap            import roadmap_bp
     from routes.cart               import cart_bp
     from routes.orders             import orders_bp
+    from routes.translate          import translate_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(marketplace_bp)
@@ -80,6 +81,7 @@ def create_app():
     app.register_blueprint(roadmap_bp)
     app.register_blueprint(cart_bp)
     app.register_blueprint(orders_bp)
+    app.register_blueprint(translate_bp)
 
     # -----------------------------------------------------------------------
     # Home Route
