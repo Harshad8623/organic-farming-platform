@@ -86,15 +86,31 @@ GEMINI_MODELS = [
     "gemini-2.5-pro",
 ]
 
-SYSTEM_CONTEXT = (
+SYSTEM_CONTEXT_BASE = (
     "You are KrishiBot, an expert organic farming advisor for Indian farmers. "
     "Give practical, beginner-friendly advice focused on organic methods: "
     "Jeevamrutha, Neem oil, Panchagavya, bio-fertilizers, and sustainable farming. "
-    "Keep responses concise (under 150 words), use emoji bullet points, and be warm and encouraging."
+    "Format your answer clearly using bullet points, bold key terms, and short sections. "
+    "Be warm, encouraging, and accurate. Under 200 words unless detail is necessary."
 )
 
+SYSTEM_CONTEXT_LANG = {
+    'hi': (
+        "You are KrishiBot, एक विशेषज्ञ जैविक कृषि सलाहकार। "
+        "**हिंदी में उत्तर दें।** किसानों को व्यावहारिक, सरल भाषा में सलाह दें। "
+        "जीवामृत, नीम तेल, पंचगव्य और टिकाऊ खेती पर ध्यान दें। "
+        "बुलेट पॉइंट और बोल्ड शब्दों का उपयोग करें। 200 शब्दों से कम में जवाब दें।"
+    ),
+    'mr': (
+        "You are KrishiBot, एक तज्ञ सेंद्रिय शेती सल्लागार. "
+        "**मराठीत उत्तर द्या.** शेतकऱ्यांना साध्या भाषेत व्यावहारिक सल्ला द्या. "
+        "जीवामृत, कडुनिंब तेल, पंचगव्य आणि शाश्वत शेतीवर लक्ष केंद्रित करा. "
+        "बुलेट पॉइंट्स आणि ठळक शब्द वापरा. 200 शब्दांपेक्षा कमी उत्तर द्या."
+    ),
+}
 
-def _gemini_response(question):
+
+def _gemini_response(question, lang='en'):
     """Call Gemini API, trying multiple models until one succeeds."""
     import requests
     import time
@@ -103,9 +119,12 @@ def _gemini_response(question):
     if not api_key:
         raise ValueError("No API key configured")
 
+    # Pick language-aware system context
+    system_ctx = SYSTEM_CONTEXT_LANG.get(lang, SYSTEM_CONTEXT_BASE)
+
     payload = {
         "contents": [{
-            "parts": [{"text": f"{SYSTEM_CONTEXT}\n\nFarmer's question: {question}"}]
+            "parts": [{"text": f"{system_ctx}\n\nFarmer's question: {question}"}]
         }]
     }
 
@@ -163,6 +182,9 @@ def ask():
     import logging
     data     = request.get_json(silent=True) or {}
     question = data.get('question', '').strip()
+    lang     = data.get('lang', 'en')  # en / hi / mr
+    if lang not in ('en', 'hi', 'mr'):
+        lang = 'en'
 
     if not question:
         return jsonify({'answer': 'Please type a question.'})
@@ -176,7 +198,7 @@ def ask():
 
     if api_key:
         try:
-            answer = _gemini_response(question)
+            answer = _gemini_response(question, lang=lang)
             return jsonify({'answer': answer, 'source': 'gemini'})
         except Exception as e:
             logging.error(f"Gemini API error: {e}")
