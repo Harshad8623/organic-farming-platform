@@ -5,15 +5,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ── Escape base.html main padding and set page background ── */
+  body { background: #0d1f12 !important; }
+  main.py-4 { padding-top: 0 !important; padding-bottom: 0 !important; }
+
   /* ══════════════════════════════════════════════════════
      PAGE SHELL
   ══════════════════════════════════════════════════════ */
   .krishi-chat-page {
-    background: linear-gradient(135deg, #0d1f12 0%, #0f2d1a 50%, #0a1a0e 100%);
-    min-height: calc(100vh - 70px);
+    background: linear-gradient(160deg, #0d1f12 0%, #0f2d1a 60%, #0a1a0e 100%);
+    min-height: calc(100vh - 62px);
     display: flex;
     flex-direction: column;
     font-family: 'Inter', sans-serif;
+    color: #e8f5e9;
   }
 
   /* ══════════════════════════════════════════════════════
@@ -133,10 +138,11 @@
     position: relative;
   }
   .bot-bubble {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: rgba(255,255,255,0.92);
+    background: #ffffff;
+    border: 1px solid #e0f0e8;
+    color: #1a3a2a;
     border-radius: 4px 18px 18px 18px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.18);
   }
   .user-bubble {
     background: linear-gradient(135deg, #2d6a4f, #1a5c34);
@@ -145,35 +151,37 @@
     border: 1px solid rgba(46,213,115,0.2);
   }
 
-  /* Markdown rendered in bot bubbles */
-  .bot-bubble h3 { font-size: 15px; font-weight: 700; color: #2ed573; margin: 10px 0 6px; }
-  .bot-bubble strong { color: #7fffc4; font-weight: 600; }
-  .bot-bubble em { color: #a8e6cf; font-style: italic; }
+  /* Markdown in bot bubbles — dark text on white card */
+  .bot-bubble h3 { font-size: 15px; font-weight: 700; color: #1e6e3e; margin: 10px 0 6px; }
+  .bot-bubble strong { color: #1a5c34; font-weight: 600; }
+  .bot-bubble em { color: #2d6a4f; font-style: italic; }
   .bot-bubble ul { margin: 8px 0 8px 4px; padding-left: 18px; }
-  .bot-bubble ul li { margin: 5px 0; }
+  .bot-bubble ul li { margin: 5px 0; color: #2a4a2a; }
   .bot-bubble ol { margin: 8px 0 8px 4px; padding-left: 18px; }
-  .bot-bubble ol li { margin: 5px 0; }
+  .bot-bubble ol li { margin: 5px 0; color: #2a4a2a; }
   .bot-bubble code {
-    background: rgba(46,213,115,0.15);
-    border: 1px solid rgba(46,213,115,0.25);
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
     border-radius: 5px;
     padding: 1px 6px;
     font-size: 13px;
-    color: #7fffc4;
+    color: #1e8449;
     font-family: monospace;
   }
   .bot-bubble blockquote {
     border-left: 3px solid #2ed573;
     padding-left: 12px;
     margin: 10px 0;
-    color: rgba(255,255,255,0.65);
+    color: #4a6a4a;
     font-style: italic;
   }
   .bot-bubble table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-  .bot-bubble th { background: rgba(46,213,115,0.2); color: #7fffc4; padding: 7px 10px; text-align: left; }
-  .bot-bubble td { padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .bot-bubble .divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0; }
-  .bot-bubble a { color: #2ed573; text-decoration: underline; }
+  .bot-bubble th { background: #e8f5e9; color: #1e6e3e; padding: 7px 10px; text-align: left; }
+  .bot-bubble td { padding: 6px 10px; border-bottom: 1px solid #f0f0f0; color: #2a4a2a; }
+  .bot-bubble .divider { border: none; border-top: 1px solid #e0f0e0; margin: 10px 0; }
+  .bot-bubble a { color: #1e8449; text-decoration: underline; }
+  .bot-bubble p { margin: 0 0 6px; }
+  .bot-bubble p:last-child { margin-bottom: 0; }
 
   /* Message meta */
   .msg-meta {
@@ -201,20 +209,20 @@
   ══════════════════════════════════════════════════════ */
   .typing-wrap {
     display: flex; gap: 5px; align-items: center;
-    padding: 11px 16px;
+    padding: 6px 4px;
   }
   .typing-wrap span {
     width: 8px; height: 8px; border-radius: 50%;
-    background: rgba(46,213,115,0.6);
+    background: #2d6a4f;
     animation: typing 1.2s infinite;
   }
   .typing-wrap span:nth-child(2) { animation-delay: 0.2s; }
   .typing-wrap span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes typing {
-    0%,60%,100% { transform: translateY(0); opacity:0.4; }
-    30%         { transform: translateY(-8px); opacity:1; }
+    0%,60%,100% { transform: translateY(0); opacity: 0.3; }
+    30%          { transform: translateY(-7px); opacity: 1; }
   }
-  .typing-label { font-size: 12px; color: rgba(255,255,255,0.45); margin-left: 4px; }
+  .typing-label { font-size: 12px; color: #4a7c5a; margin-left: 6px; font-weight: 500; }
 
   /* ══════════════════════════════════════════════════════
      SUGGESTED FOLLOW-UPS
