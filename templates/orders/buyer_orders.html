@@ -133,8 +133,8 @@
       <div class="order-body">
         <div class="row align-items-center">
           <div class="col-md-6">
-            <div class="product-name">{{ order.product.name }}</div>
-            <div class="farmer-name"><span data-i18n="buyer_orders_col_farmer">Farmer</span>: {{ order.farmer.name }}</div>
+            <div class="product-name">{{ order.product.name if order.product else '(Product removed)' }}</div>
+            <div class="farmer-name"><span data-i18n="buyer_orders_col_farmer">Farmer</span>: {{ order.farmer.name if order.farmer else 'N/A' }}</div>
             <div class="mt-1" style="font-size:13px;color:#495057;">
               <span data-i18n="buyer_orders_col_qty">Qty</span>: {{ order.quantity_ordered }} &nbsp;|&nbsp;
               <strong style="color:#1e8449;">₹{{ "%.2f"|format(order.total_price) }}</strong>

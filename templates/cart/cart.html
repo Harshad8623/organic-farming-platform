@@ -166,7 +166,7 @@
                       style="display:inline;">
                   <div class="qty-control">
                     <button type="submit" name="quantity" value="{{ item.quantity - 1 }}"
-                            onclick="return {{ item.quantity > 1 }}">−</button>
+                            onclick="return {{ 'true' if item.quantity > 1 else 'false' }}">−</button>
                     <span>{{ item.quantity }}</span>
                     <button type="submit" name="quantity" value="{{ item.quantity + 1 }}">+</button>
                   </div>

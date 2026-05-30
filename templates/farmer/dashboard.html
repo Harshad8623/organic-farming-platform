@@ -44,24 +44,24 @@
     <div class="col-md-3">
       <div class="card stat-card text-center">
         <div class="card-body">
-          <div class="stat-num text-primary">22</div>
-          <div class="text-muted" data-i18n="farmer_dash_crops_supported">Crops Supported</div>
+          <div class="stat-num text-primary">{{ total_orders }}</div>
+          <div class="text-muted" data-i18n="farmer_dash_total_orders">Total Orders</div>
         </div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="card stat-card text-center">
         <div class="card-body">
-          <div class="stat-num text-warning">15</div>
-          <div class="text-muted" data-i18n="farmer_dash_diseases_db">Diseases in DB</div>
+          <div class="stat-num text-warning">{{ roadmap_count }}</div>
+          <div class="text-muted" data-i18n="farmer_dash_roadmaps">Crop Roadmaps</div>
         </div>
       </div>
     </div>
     <div class="col-md-3">
       <div class="card stat-card text-center">
         <div class="card-body">
-          <div class="stat-num text-danger">AI</div>
-          <div class="text-muted" data-i18n="farmer_dash_smart_tools">Smart Tools</div>
+          <div class="stat-num text-danger">₹{{ total_revenue }}</div>
+          <div class="text-muted" data-i18n="farmer_dash_revenue">Revenue (Delivered)</div>
         </div>
       </div>
     </div>

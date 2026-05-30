@@ -6,7 +6,11 @@ class Config:
     # -------------------------------------------------------
     # Security
     # -------------------------------------------------------
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'krishi-ai-secret-2024-change-in-production')
+    # ⚠️  ALWAYS set SECRET_KEY in the environment — never rely on this fallback in production.
+    # Generate a strong key: python -c "import secrets; print(secrets.token_hex(32))"
+    SECRET_KEY = os.environ.get('SECRET_KEY') or (
+        'krishi-ai-dev-only-' + os.urandom(16).hex()
+    )
 
     # -------------------------------------------------------
     # Database — PostgreSQL on Render, SQLite locally

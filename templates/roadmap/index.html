@@ -143,12 +143,12 @@
 
   <!-- Filter Bar -->
   <div class="filter-bar">
-    <span style="font-weight:600;color:#495057;font-size:14px;">Filter by Season:</span>
-    <button class="btn-season active" data-filter="all" onclick="filterCrops('all', this)">All Crops</button>
-    <button class="btn-season" data-filter="Kharif" onclick="filterCrops('Kharif', this)">☀️ Kharif</button>
-    <button class="btn-season" data-filter="Rabi" onclick="filterCrops('Rabi', this)">❄️ Rabi</button>
-    <button class="btn-season" data-filter="Zaid" onclick="filterCrops('Zaid', this)">🌤️ Zaid</button>
-    <button class="btn-season" data-filter="Year-round" onclick="filterCrops('Year-round', this)">🔄 Year-round</button>
+    <span data-i18n="roadmap_filter_label" style="font-weight:600;color:#495057;font-size:14px;">Filter by Season:</span>
+    <button class="btn-season active" data-filter="all" data-i18n="roadmap_all_crops" onclick="filterCrops('all', this)">All Crops</button>
+    <button class="btn-season" data-filter="Kharif" data-i18n="roadmap_kharif" onclick="filterCrops('Kharif', this)">☀️ Kharif</button>
+    <button class="btn-season" data-filter="Rabi" data-i18n="roadmap_rabi" onclick="filterCrops('Rabi', this)">❄️ Rabi</button>
+    <button class="btn-season" data-filter="Zaid" data-i18n="roadmap_zaid" onclick="filterCrops('Zaid', this)">🌤️ Zaid</button>
+    <button class="btn-season" data-filter="Year-round" data-i18n="roadmap_yearround" onclick="filterCrops('Year-round', this)">🔄 Year-round</button>
   </div>
 
   {% if crops %}
@@ -165,7 +165,7 @@
               {{ crop.season }}
             </span>
             {% if crop.duration_days %}
-            <span>{{ crop.duration_days }} days</span>
+            <span>{{ crop.duration_days }} <span data-i18n="common_days">days</span></span>
             {% endif %}
           </div>
         </div>
@@ -176,7 +176,7 @@
   {% else %}
   <div class="text-center py-5">
     <div style="font-size:80px;">🌱</div>
-    <h4 class="text-muted mt-3">No crop roadmaps found.</h4>
+    <h4 class="text-muted mt-3" data-i18n="roadmap_none">No crop roadmaps found.</h4>
     <p class="text-muted">Run <code>python database/seed.py</code> to populate the database.</p>
   </div>
   {% endif %}

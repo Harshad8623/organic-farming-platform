@@ -6,7 +6,7 @@ Marketplace: Farmers list products, Buyers browse and filter them.
 
 import os
 import uuid
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, abort
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from models import db, Product, Order, User
@@ -121,7 +121,9 @@ def my_products():
 @login_required
 def delete_product(product_id):
     """Farmer deletes one of their products."""
-    product = Product.query.get_or_404(product_id)
+    if not current_user.is_farmer():
+        abort(403)
+    product = db.get_or_404(Product, product_id)
 
     if product.farmer_id != current_user.id:
         flash('You can only delete your own products.', 'danger')
@@ -146,8 +148,8 @@ def delete_product(product_id):
     # so buyers don't lose their purchase history and ratings remain intact
     from models import Order as _Order
     db.session.execute(
-        db.text('UPDATE orders SET product_id = NULL WHERE product_id = :pid AND status IN (:s1, :s2)'),
-        {'pid': product_id, 's1': 'delivered', 's2': 'rejected'}
+        db.text('UPDATE orders SET product_id = NULL WHERE product_id = :pid AND status IN (:s1, :s2, :s3)'),
+        {'pid': product_id, 's1': 'delivered', 's2': 'rejected', 's3': 'cancelled'}
     )
 
     # Remove image file if it exists

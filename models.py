@@ -8,7 +8,8 @@ Tables: User, FarmerProfile, BuyerProfile, Product,
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime
+from datetime import datetime, timezone
+from sqlalchemy.orm import validates
 
 # Single SQLAlchemy instance shared across the app
 db = SQLAlchemy()
@@ -26,7 +27,7 @@ class User(UserMixin, db.Model):
     email      = db.Column(db.String(120), unique=True, nullable=False)
     password   = db.Column(db.String(200), nullable=False)
     role       = db.Column(db.String(20),  nullable=False)  # 'farmer' | 'buyer'
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     farmer_profile   = db.relationship('FarmerProfile', backref='user', uselist=False, cascade='all, delete-orphan')
@@ -97,7 +98,7 @@ class Product(db.Model):
     description    = db.Column(db.Text)
     image_filename = db.Column(db.String(200))
     category       = db.Column(db.String(50))
-    created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at     = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     orders     = db.relationship('Order',    backref='product', lazy=True)
@@ -135,14 +136,24 @@ class Order(db.Model):
     razorpay_order_id   = db.Column(db.String(100))               # Razorpay order reference
     razorpay_payment_id = db.Column(db.String(100))               # Razorpay payment reference
     status            = db.Column(db.String(20), nullable=False, default='pending')
-    created_at        = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at        = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at        = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at        = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
+                                  onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     rating = db.relationship('Rating', backref='order', uselist=False, cascade='all, delete-orphan')
 
+    @validates('status')
+    def validate_status(self, key, value):
+        if value not in self.STATUS_CHOICES:
+            raise ValueError(f'Invalid order status: "{value}". Must be one of {self.STATUS_CHOICES}.')
+        return value
+
     def status_index(self):
+        # Returns position in the forward-progress flow; rejected = -1 (terminal failure state)
         statuses = ['pending', 'accepted', 'shipped', 'delivered']
+        if self.status == 'rejected':
+            return -1
         try:
             return statuses.index(self.status)
         except ValueError:
@@ -166,7 +177,7 @@ class Rating(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id', ondelete='SET NULL'), nullable=True)  # nullable: product may be deleted
     stars      = db.Column(db.Integer, nullable=False)  # 1-5
     review     = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
         return f'<Rating {self.stars}★ for order #{self.order_id}>'

@@ -7,23 +7,27 @@ Charts are passed as JSON to the template and rendered with Plotly.js.
 
 import json
 import random
+import itertools
 from flask import Blueprint, render_template
 from flask_login import login_required
-from models import db, Product, User
+from models import db, Product, User, Order
+from datetime import datetime, timezone, timedelta
 
 analytics_bp = Blueprint('analytics', __name__, url_prefix='/analytics')
 
 
 def _make_chart(chart_type, labels, values, title, color_scheme=None):
     """Helper to create a Plotly chart dict."""
-    colors = color_scheme or ['#2e7d32','#388e3c','#43a047','#4caf50','#66bb6a',
-                               '#81c784','#a5d6a7','#c8e6c9','#e8f5e9','#f1f8e9']
+    base_colors = color_scheme or ['#2e7d32','#388e3c','#43a047','#4caf50','#66bb6a',
+                                   '#81c784','#a5d6a7','#c8e6c9','#e8f5e9','#f1f8e9']
+    # Cycle colors so we never run short regardless of label count
+    colors = list(itertools.islice(itertools.cycle(base_colors), len(labels)))
     if chart_type == 'bar':
         data = [{'type': 'bar', 'x': labels, 'y': values,
-                 'marker': {'color': colors[:len(labels)]}}]
+                 'marker': {'color': colors}}]
     elif chart_type == 'pie':
         data = [{'type': 'pie', 'labels': labels, 'values': values,
-                 'marker': {'colors': colors[:len(labels)]}}]
+                 'marker': {'colors': colors}}]
     elif chart_type == 'line':
         data = [{'type': 'scatter', 'mode': 'lines+markers',
                  'x': labels, 'y': values,
@@ -70,15 +74,31 @@ def _price_by_category():
 
 
 def _monthly_registrations():
-    """Simulated monthly user registrations (last 12 months)."""
-    months = ['May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr']
-    # Use real DB count or simulate growth
-    total = User.query.count()
-    base  = max(1, total // 12)
-    # Seed with total so chart is stable until user count changes
-    rng = random.Random(total)
-    values = [base + rng.randint(0, base * 2) for _ in months]
-    return _make_chart('line', months, values, 'User Registrations (Last 12 Months)')
+    """Real monthly user registrations for the last 12 months from the DB."""
+    now   = datetime.now(timezone.utc)
+    # Build month labels and date boundaries for the last 12 months
+    months_labels = []
+    counts        = []
+    for i in range(11, -1, -1):
+        # First day of each month going back
+        month_start = (now.replace(day=1) - timedelta(days=i * 30)).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        # Last day of that month = first day of next month
+        if month_start.month == 12:
+            month_end = month_start.replace(year=month_start.year + 1, month=1)
+        else:
+            month_end = month_start.replace(month=month_start.month + 1)
+
+        label = month_start.strftime('%b %Y')
+        count = User.query.filter(
+            User.created_at >= month_start,
+            User.created_at < month_end
+        ).count()
+        months_labels.append(label)
+        counts.append(count)
+
+    return _make_chart('line', months_labels, counts, 'User Registrations (Last 12 Months)')
 
 
 def _soil_crop_guide():

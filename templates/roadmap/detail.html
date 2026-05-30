@@ -89,14 +89,14 @@
 <div class="roadmap-hero-detail">
   <div class="container">
     <div class="emoji-big">{{ crop.emoji }}</div>
-    <h1 class="mt-3">{{ crop.crop_name }} — Organic Roadmap</h1>
+    <h1 class="mt-3">{{ crop.crop_name }} — <span data-i18n="roadmap_organic_roadmap">Organic Roadmap</span></h1>
     <p class="mt-2">{{ crop.description }}</p>
     <div class="mt-3">
       {% if crop.season %}
-      <span class="info-pill">🗓️ {{ crop.season }} Season</span>
+      <span class="info-pill">🗓️ {{ crop.season }} <span data-i18n="roadmap_detail_season">Season</span></span>
       {% endif %}
       {% if crop.duration_days %}
-      <span class="info-pill">⏱️ {{ crop.duration_days }} days</span>
+      <span class="info-pill">⏱️ {{ crop.duration_days }} <span data-i18n="common_days">days</span></span>
       {% endif %}
       {% if crop.expected_yield %}
       <span class="info-pill">📦 {{ crop.expected_yield }}</span>
@@ -117,7 +117,7 @@
     <!-- Timeline -->
     <div class="col-lg-8">
       <h3 class="fw-bold mb-4" style="color:#1a3a2a;">
-        📋 Farming Timeline
+        <span data-i18n="roadmap_timeline_heading">📋 Farming Timeline</span>
       </h3>
 
       {% if stages %}
@@ -129,13 +129,13 @@
             {{ stage_icons[loop.index0 % 10] }}
           </div>
           <div class="timeline-card">
-            <h5>Stage {{ loop.index }}: {{ stage.stage }}</h5>
+            <h5><span data-i18n="roadmap_stage">Stage</span> {{ loop.index }}: {{ stage.stage }}</h5>
             {% if stage.days %}
             <span class="timeline-days">📅 {{ stage.days }}</span>
             {% endif %}
 
             {% if stage.actions %}
-            <p class="text-muted mb-2" style="font-size:13px;font-weight:600;">Key Actions:</p>
+            <p class="text-muted mb-2" style="font-size:13px;font-weight:600;"><span data-i18n="roadmap_key_actions">Key Actions:</span></p>
             <ul>
               {% for action in stage.actions %}
               <li>{{ action }}</li>
@@ -145,7 +145,7 @@
 
             {% if stage.tips %}
             <div class="tips-box">
-              <h6>💡 Organic Tips</h6>
+              <h6 data-i18n="roadmap_organic_tips">💡 Organic Tips</h6>
               <ul>
                 {% for tip in stage.tips %}
                 <li>{{ tip }}</li>
@@ -159,7 +159,7 @@
       </ul>
       {% else %}
       <div class="text-center text-muted py-5">
-        <p>No stage data available yet.</p>
+        <p data-i18n="roadmap_no_stages">No stage data available yet.</p>
       </div>
       {% endif %}
     </div>
@@ -169,17 +169,17 @@
       <!-- Quick Info Card -->
       <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
         <div class="card-header text-white fw-bold" style="background:#2d6a4f;">
-          🌿 Quick Crop Summary
+          <span data-i18n="roadmap_quick_summary">🌿 Quick Crop Summary</span>
         </div>
         <div class="card-body">
           <table class="table table-sm table-borderless mb-0">
             <tbody>
-              <tr><td class="text-muted">Crop</td><td class="fw-semibold">{{ crop.crop_name }}</td></tr>
-              {% if crop.season %}<tr><td class="text-muted">Season</td><td>{{ crop.season }}</td></tr>{% endif %}
-              {% if crop.duration_days %}<tr><td class="text-muted">Duration</td><td>{{ crop.duration_days }} days</td></tr>{% endif %}
-              {% if crop.expected_yield %}<tr><td class="text-muted">Yield</td><td>{{ crop.expected_yield }}</td></tr>{% endif %}
-              {% if crop.soil_type %}<tr><td class="text-muted">Soil</td><td>{{ crop.soil_type }}</td></tr>{% endif %}
-              {% if crop.climate %}<tr><td class="text-muted">Climate</td><td>{{ crop.climate }}</td></tr>{% endif %}
+              <tr><td class="text-muted" data-i18n="roadmap_col_crop">Crop</td><td class="fw-semibold">{{ crop.crop_name }}</td></tr>
+              {% if crop.season %}<tr><td class="text-muted" data-i18n="roadmap_col_season">Season</td><td>{{ crop.season }}</td></tr>{% endif %}
+              {% if crop.duration_days %}<tr><td class="text-muted" data-i18n="roadmap_col_duration">Duration</td><td>{{ crop.duration_days }} <span data-i18n="common_days">days</span></td></tr>{% endif %}
+              {% if crop.expected_yield %}<tr><td class="text-muted" data-i18n="roadmap_col_yield">Yield</td><td>{{ crop.expected_yield }}</td></tr>{% endif %}
+              {% if crop.soil_type %}<tr><td class="text-muted" data-i18n="roadmap_col_soil">Soil</td><td>{{ crop.soil_type }}</td></tr>{% endif %}
+              {% if crop.climate %}<tr><td class="text-muted" data-i18n="roadmap_col_climate">Climate</td><td>{{ crop.climate }}</td></tr>{% endif %}
             </tbody>
           </table>
         </div>
@@ -189,29 +189,29 @@
       <a href="{{ url_for('marketplace.listing', search=crop.crop_name) }}"
          class="btn w-100 mb-3 fw-bold"
          style="background:linear-gradient(135deg,#2ed573,#1e8449);color:white;border-radius:12px;padding:14px;">
-        🛒 Buy {{ crop.crop_name }} from Marketplace
+        🛒 <span data-i18n="roadmap_buy_prefix">Buy</span> {{ crop.crop_name }} <span data-i18n="roadmap_buy_suffix">from Marketplace</span>
       </a>
 
       <!-- Back -->
       <a href="{{ url_for('roadmap.index') }}"
          class="btn w-100 btn-outline-secondary"
          style="border-radius:12px;">
-        ← All Crop Roadmaps
+         <span data-i18n="roadmap_back_all">← All Crop Roadmaps</span>
       </a>
 
       <!-- General Tips -->
       <div class="card border-0 shadow-sm mt-4" style="border-radius:16px;">
         <div class="card-header fw-bold" style="background:#fff3cd;">
-          ☀️ General Organic Tips
+          <span data-i18n="roadmap_general_tips_heading">☀️ General Organic Tips</span>
         </div>
         <div class="card-body">
           <ul class="mb-0" style="font-size:13px;padding-left:18px;">
-            <li>Use compost and vermicompost for soil health.</li>
-            <li>Neem oil spray for pest control.</li>
-            <li>Crop rotation prevents soil depletion.</li>
-            <li>Drip irrigation conserves water.</li>
-            <li>Test soil pH before every season.</li>
-            <li>Inter-cropping improves yield naturally.</li>
+            <li data-i18n="roadmap_tip_compost">Use compost and vermicompost for soil health.</li>
+            <li data-i18n="roadmap_tip_neem">Neem oil spray for pest control.</li>
+            <li data-i18n="roadmap_tip_rotation">Crop rotation prevents soil depletion.</li>
+            <li data-i18n="roadmap_tip_drip">Drip irrigation conserves water.</li>
+            <li data-i18n="roadmap_tip_ph">Test soil pH before every season.</li>
+            <li data-i18n="roadmap_tip_intercrop">Inter-cropping improves yield naturally.</li>
           </ul>
         </div>
       </div>

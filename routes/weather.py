@@ -6,6 +6,7 @@ Falls back to simulated data when API key is not set.
 """
 
 import random
+import requests
 from flask import Blueprint, render_template, request, flash, current_app
 from flask_login import login_required
 
@@ -157,6 +158,8 @@ def advisory():
             weather = _fetch_weather(city)
             tips    = _advice(weather['temp'], weather['humidity'],
                               weather['rain_prob'], weather['description'])
+        except requests.exceptions.ConnectionError:
+            flash('Could not connect to the weather service. Please check your internet connection.', 'danger')
         except Exception as e:
             flash(f'Could not fetch weather: {e}', 'danger')
 

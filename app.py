@@ -93,13 +93,16 @@ def create_app():
     # -----------------------------------------------------------------------
     with app.app_context():
         db.create_all()
-        try:
-            if User.query.count() == 0:
-                from database.seed import seed_database
-                seed_database()
-                print("🌱 Database auto-seeded successfully!")
-        except Exception as e:
-            app.logger.warning(f"Auto-seeding skipped or failed: {e}")
+        # Only auto-seed in development (DEBUG=True) to avoid seeding test
+        # credentials on a production server where the DB starts empty.
+        if app.config.get('DEBUG', False):
+            try:
+                if User.query.count() == 0:
+                    from database.seed import seed_database
+                    seed_database()
+                    print("🌱 Database auto-seeded successfully!")
+            except Exception as e:
+                app.logger.warning(f"Auto-seeding skipped or failed: {e}")
 
     return app
 

@@ -8,8 +8,8 @@ The model is auto-trained on first request if crop_model.pkl doesn't exist.
 import os
 import pickle
 import numpy as np
-from flask import Blueprint, render_template, request, current_app, flash
-from flask_login import login_required
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
+from flask_login import login_required, current_user
 
 crop_bp = Blueprint('crop', __name__, url_prefix='/crop')
 
@@ -109,8 +109,10 @@ def _train_and_save(model_path, encoder_path):
     y  = le.fit_transform(df['label'])
     X  = df[['N','P','K','temperature','humidity','ph','rainfall']].values
 
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model = RandomForestClassifier(n_estimators=100, random_state=42, oob_score=True)
     model.fit(X, y)
+    # Store the real OOB score so routes can display it
+    model._oob_score_pct = round(model.oob_score_ * 100, 1)
 
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     with open(model_path, 'wb') as f:
@@ -125,6 +127,10 @@ def _train_and_save(model_path, encoder_path):
 @crop_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def recommend():
+    # Crop AI is for farmers — redirect buyers politely
+    if current_user.is_buyer():
+        flash('Crop Recommendation is a farmer tool. Browse our marketplace instead!', 'info')
+        return redirect(url_for('marketplace.listing'))
     prediction = None
     accuracy   = None
     tip        = None
@@ -145,8 +151,10 @@ def recommend():
             prediction = encoder.inverse_transform([pred_idx])[0].title()
             tip = CROP_TIPS.get(prediction.lower(), '')
 
-            # Approximate accuracy from model's own OOB score-like note
-            accuracy = 95  # Our synthetic model consistently scores ~95%
+            # Use the real OOB score stored at training time, or fall back to computing it
+            accuracy = getattr(model, '_oob_score_pct', None)
+            if accuracy is None and hasattr(model, 'oob_score_'):
+                accuracy = round(model.oob_score_ * 100, 1)
 
         except Exception as e:
             flash(f'Prediction error: {e}', 'danger')

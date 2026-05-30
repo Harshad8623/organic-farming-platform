@@ -32,7 +32,7 @@
     <div class="col-md-5">
       <div class="card shadow-sm text-center">
         <div class="card-header bg-primary text-white">
-          <i class="bi bi-cloud-sun me-1"></i>Current Weather — {{ weather.city }}, {{ weather.country }}
+          <i class="bi bi-cloud-sun me-1"></i><span data-i18n="weather_current">Current Weather</span> — {{ weather.city }}, {{ weather.country }}
         </div>
         <div class="card-body py-4">
           {% if weather.icon %}
@@ -48,20 +48,20 @@
             </div>
           {% endif %}
           <h3 class="fw-bold text-primary mt-2">{{ weather.temp }}°C</h3>
-          <p class="text-muted mb-3">{{ weather.description }}<br />Feels like {{ weather.feels_like }}°C</p>
+          <p class="text-muted mb-3">{{ weather.description }}<br /><span data-i18n="weather_feels_like">Feels like</span> {{ weather.feels_like }}°C</p>
 
           <div class="row text-center">
             <div class="col-4">
               <div class="fw-bold">{{ weather.humidity }}%</div>
-              <small class="text-muted">Humidity</small>
+              <small class="text-muted" data-i18n="weather_humidity">Humidity</small>
             </div>
             <div class="col-4">
               <div class="fw-bold">{{ weather.wind_speed }} m/s</div>
-              <small class="text-muted">Wind</small>
+              <small class="text-muted" data-i18n="weather_wind">Wind</small>
             </div>
             <div class="col-4">
               <div class="fw-bold">{{ weather.rain_prob }}%</div>
-              <small class="text-muted">Rain Prob.</small>
+              <small class="text-muted" data-i18n="weather_rain_prob">Rain Prob.</small>
             </div>
           </div>
         </div>
@@ -72,7 +72,7 @@
     <div class="col-md-7">
       <div class="card shadow-sm h-100">
         <div class="card-header bg-success text-white">
-          <i class="bi bi-lightbulb me-1"></i>Smart Farming Advisory
+          <i class="bi bi-lightbulb me-1"></i><span data-i18n="weather_smart_advisory">Smart Farming Advisory</span>
         </div>
         <div class="card-body">
           {% if tips %}
@@ -84,15 +84,15 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="alert alert-success">✅ Conditions are normal — proceed with regular farm operations.</div>
+            <div class="alert alert-success" data-i18n="weather_normal_ops">✅ Conditions are normal — proceed with regular farm operations.</div>
           {% endif %}
 
           <hr />
-          <h6 class="fw-semibold">📅 General Farming Calendar Tips:</h6>
+          <h6 class="fw-semibold" data-i18n="weather_cal_tips">📅 General Farming Calendar Tips:</h6>
           <ul class="small text-muted">
-            <li>Best spray time: early morning (6–9 AM) or evening (4–6 PM)</li>
-            <li>Irrigate when soil feels dry 2 cm below surface</li>
-            <li>Harvest before predicted heavy rainfall to avoid crop loss</li>
+            <li data-i18n="weather_tip_spray">Best spray time: early morning (6–9 AM) or evening (4–6 PM)</li>
+            <li data-i18n="weather_tip_irrigate">Irrigate when soil feels dry 2 cm below surface</li>
+            <li data-i18n="weather_tip_harvest">Harvest before predicted heavy rainfall to avoid crop loss</li>
           </ul>
         </div>
       </div>
@@ -104,8 +104,8 @@
   {% if not weather %}
   <div class="text-center text-muted py-5">
     <div style="font-size:4rem">🌤</div>
-    <h5 class="mt-3">Enter your city above to get weather advisory</h5>
-    <p>We'll provide smart irrigation and farming tips based on real-time weather.</p>
+    <h5 class="mt-3" data-i18n="weather_enter_city">Enter your city above to get weather advisory</h5>
+    <p data-i18n="weather_enter_city_sub">We'll provide smart irrigation and farming tips based on real-time weather.</p>
     <p class="small">
       💡 <strong>Note:</strong> Add your OpenWeatherMap API key in <code>config.py</code> for live data.
       Without it, simulated weather is shown.

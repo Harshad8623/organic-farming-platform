@@ -7,8 +7,8 @@ Uses a simulated predictor (swap predict_disease() for a real CNN if needed).
 
 import os
 import uuid
-from flask import Blueprint, render_template, request, flash, current_app
-from flask_login import login_required
+from flask import Blueprint, render_template, request, flash, current_app, redirect, url_for
+from flask_login import login_required, current_user
 
 disease_bp = Blueprint('disease', __name__, url_prefix='/disease')
 
@@ -22,6 +22,11 @@ def _allowed(filename):
 @disease_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def detect():
+    # Disease Detect is for farmers — redirect buyers politely
+    if current_user.is_buyer():
+        flash('Disease Detection is a farmer tool. Browse our marketplace instead!', 'info')
+        return redirect(url_for('marketplace.listing'))
+
     result     = None
     image_url  = None
 
@@ -50,13 +55,12 @@ def detect():
             result = predict_disease(save_path, api_key=api_key)
         except Exception as e:
             flash(f'Detection error: {e}', 'danger')
-        finally:
-            # Clean up: delete temp disease image after analysis (prevent disk fill)
+            # Clean up the image only on failure (no result to show)
             try:
                 if os.path.exists(save_path):
                     os.remove(save_path)
-                    image_url = None  # no longer available to display
+                    image_url = None
             except Exception:
-                pass  # non-critical; leave file if deletion fails
+                pass  # non-critical
 
     return render_template('disease/detection.html', result=result, image_url=image_url)

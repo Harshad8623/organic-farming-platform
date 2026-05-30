@@ -7,6 +7,7 @@ Checkout supports:
   - Razorpay UPI / Card      → two-step: create order → verify signature → save
 """
 
+import re
 import hmac
 import hashlib
 import razorpay
@@ -56,7 +57,7 @@ def add_to_cart(product_id):
         flash('Only buyers can add items to cart.', 'danger')
         return redirect(url_for('marketplace.listing'))
 
-    product = Product.query.get_or_404(product_id)
+    product = db.get_or_404(Product, product_id)
 
     if product.farmer_id == current_user.id:
         flash('You cannot buy your own product.', 'warning')
@@ -73,8 +74,8 @@ def add_to_cart(product_id):
         qty = 500
 
     # Try to extract numeric stock from product.quantity string (e.g. '100', '50 kg')
-    import re as _re
-    stock_match = _re.search(r'\d+', str(product.quantity))
+    stock_available = None  # initialized before use to avoid NameError
+    stock_match = re.search(r'\d+', str(product.quantity))
     if stock_match:
         stock_available = int(stock_match.group())
         if qty > stock_available:
@@ -89,7 +90,7 @@ def add_to_cart(product_id):
     if existing:
         new_total = existing.quantity + qty
         # Re-check against stock after combining
-        if stock_match and new_total > stock_available:
+        if stock_available is not None and new_total > stock_available:
             new_total = stock_available
             flash(f'Cart updated to maximum available stock: {product.quantity}.', 'info')
         existing.quantity = new_total
@@ -99,7 +100,12 @@ def add_to_cart(product_id):
 
     db.session.commit()
     flash(f'🛒 "{product.name}" added to cart!', 'success')
-    return redirect(request.referrer or url_for('marketplace.listing'))
+    # Safe redirect: only allow same-origin referrers to prevent open redirect
+    referrer = request.referrer
+    from urllib.parse import urlparse
+    if referrer and urlparse(referrer).netloc == urlparse(request.host_url).netloc:
+        return redirect(referrer)
+    return redirect(url_for('marketplace.listing'))
 
 
 # ---------------------------------------------------------------------------
@@ -108,7 +114,7 @@ def add_to_cart(product_id):
 @cart_bp.route('/remove/<int:item_id>', methods=['POST'])
 @login_required
 def remove_from_cart(item_id):
-    item = CartItem.query.get_or_404(item_id)
+    item = db.get_or_404(CartItem, item_id)
     if item.buyer_id != current_user.id:
         flash('Access denied.', 'danger')
         return redirect(url_for('cart.view_cart'))
@@ -124,7 +130,7 @@ def remove_from_cart(item_id):
 @cart_bp.route('/update/<int:item_id>', methods=['POST'])
 @login_required
 def update_quantity(item_id):
-    item = CartItem.query.get_or_404(item_id)
+    item = db.get_or_404(CartItem, item_id)
     if item.buyer_id != current_user.id:
         return jsonify({'error': 'Access denied'}), 403
     try:
@@ -256,6 +262,16 @@ def verify_payment():
             status              = 'pending'
         )
         db.session.add(order)
+
+        # Decrement stock: parse numeric part from product.quantity string
+        stock_match = re.search(r'\d+', str(item.product.quantity))
+        if stock_match:
+            current_stock = int(stock_match.group())
+            new_stock = max(0, current_stock - item.quantity)
+            # Preserve any trailing unit text (e.g. " kg")
+            unit_suffix = str(item.product.quantity)[stock_match.end():]
+            item.product.quantity = str(new_stock) + unit_suffix
+
         order_count += 1
 
     CartItem.query.filter_by(buyer_id=current_user.id).delete()
@@ -299,6 +315,15 @@ def checkout():
             status            = 'pending'
         )
         db.session.add(order)
+
+        # Decrement stock: parse numeric part from product.quantity string
+        stock_match = re.search(r'\d+', str(item.product.quantity))
+        if stock_match:
+            current_stock = int(stock_match.group())
+            new_stock = max(0, current_stock - item.quantity)
+            unit_suffix = str(item.product.quantity)[stock_match.end():]
+            item.product.quantity = str(new_stock) + unit_suffix
+
         order_count += 1
 
     CartItem.query.filter_by(buyer_id=current_user.id).delete()

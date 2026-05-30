@@ -178,9 +178,19 @@
           </a>
           {% endif %}
 
+          {% if current_user.is_authenticated and current_user.is_farmer() and p.farmer_id == current_user.id %}
+          <span class="badge bg-success mb-2" style="font-size:12px;">
+            <i class="bi bi-check-circle me-1"></i>Your Product
+          </span>
+          {% endif %}
+
           <a href="{{ url_for('marketplace.farmer_detail', farmer_id=p.farmer_id) }}"
              class="btn-contact-farmer">
-            <i class="bi bi-person me-1"></i><span data-i18n="market_contact_farmer">Contact Farmer</span>
+            {% if current_user.is_authenticated and p.farmer_id == current_user.id %}
+              <i class="bi bi-pencil me-1"></i><span data-i18n="market_my_listing">My Listing</span>
+            {% else %}
+              <i class="bi bi-person me-1"></i><span data-i18n="market_contact_farmer">Contact Farmer</span>
+            {% endif %}
           </a>
         </div>
       </div>

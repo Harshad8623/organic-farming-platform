@@ -5,10 +5,14 @@ Authentication routes: Register, Login, Logout.
 Supports two roles: 'farmer' and 'buyer'.
 """
 
+import re
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, FarmerProfile, BuyerProfile
+
+# Pre-compiled email pattern for validation
+_EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -36,19 +40,23 @@ def register():
         # Basic validation
         if not name or not email or not password:
             flash('All fields are required.', 'danger')
-            return render_template('auth/register.html')
+            return render_template('auth/register.html', selected_role=role)
+
+        if not _EMAIL_RE.match(email):
+            flash('Please enter a valid email address.', 'danger')
+            return render_template('auth/register.html', selected_role=role)
 
         if len(name.strip()) < 2:
             flash('Name must be at least 2 characters.', 'danger')
-            return render_template('auth/register.html')
+            return render_template('auth/register.html', selected_role=role)
 
         if len(password) < 6:
             flash('Password must be at least 6 characters.', 'danger')
-            return render_template('auth/register.html')
+            return render_template('auth/register.html', selected_role=role)
 
         if password != confirm:
             flash('Passwords do not match.', 'danger')
-            return render_template('auth/register.html')
+            return render_template('auth/register.html', selected_role=role)
 
         if User.query.filter_by(email=email).first():
             flash('Email already registered. Please log in.', 'warning')
@@ -81,7 +89,7 @@ def register():
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
-    return render_template('auth/register.html')
+    return render_template('auth/register.html', selected_role='farmer')
 
 
 # ---------------------------------------------------------------------------
@@ -144,14 +152,22 @@ def farmer_dashboard():
     if not current_user.is_farmer():
         flash('Access denied.', 'danger')
         return redirect(url_for('auth.buyer_dashboard'))
-    from models import Product, Order
+    from models import Product, Order, CropRoadmap
     products = Product.query.filter_by(farmer_id=current_user.id).all()
     pending_orders = Order.query.filter_by(
         farmer_id=current_user.id, status='pending'
     ).count()
+    total_orders = Order.query.filter_by(farmer_id=current_user.id).count()
+    total_revenue = db.session.query(
+        db.func.sum(Order.total_price)
+    ).filter_by(farmer_id=current_user.id, status='delivered').scalar() or 0
+    roadmap_count = CropRoadmap.query.count()
     return render_template('farmer/dashboard.html',
                            products=products,
-                           pending_orders=pending_orders)
+                           pending_orders=pending_orders,
+                           total_orders=total_orders,
+                           total_revenue=round(total_revenue, 2),
+                           roadmap_count=roadmap_count)
 
 
 @auth_bp.route('/buyer/dashboard')

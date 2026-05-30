@@ -9,7 +9,7 @@ Order Management:
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from models import db, Order, Rating, Product
-from datetime import datetime
+from datetime import datetime, timezone
 
 orders_bp = Blueprint('orders', __name__, url_prefix='/orders')
 
@@ -62,7 +62,7 @@ def update_status(order_id):
     if not current_user.is_farmer():
         abort(403)
 
-    order = Order.query.get_or_404(order_id)
+    order = db.get_or_404(Order, order_id)
     if order.farmer_id != current_user.id:
         abort(403)
 
@@ -74,7 +74,7 @@ def update_status(order_id):
         return redirect(url_for('orders.farmer_orders'))
 
     order.status     = new_status
-    order.updated_at = datetime.utcnow()
+    order.updated_at = datetime.now(timezone.utc)
     db.session.commit()
 
     status_msg = {
@@ -96,7 +96,7 @@ def rate_order(order_id):
     if not current_user.is_buyer():
         abort(403)
 
-    order = Order.query.get_or_404(order_id)
+    order = db.get_or_404(Order, order_id)
 
     if order.buyer_id != current_user.id:
         abort(403)
