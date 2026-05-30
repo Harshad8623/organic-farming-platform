@@ -275,8 +275,8 @@ const TRANSLATIONS = {
     rate_order_review_ph: 'Share your experience...',
     rate_order_btn:       'Submit Rating',
 
-    home_hero_title:      'Smart Organic Farming',
-    home_hero_subtitle:   'AI-powered tools for modern Indian farmers',
+    home_hero_title:      'AI Based Organic Farming Advisory System & Marketplace',
+    home_hero_subtitle:   'AI-powered advisory, disease detection & organic marketplace for Indian farmers',
     home_get_started:     'Get Started',
     home_learn_more:      'Learn More',
     home_features_title:  'Why KrishiAI?',
@@ -615,8 +615,8 @@ const TRANSLATIONS = {
     rate_order_review_ph: 'अपना अनुभव साझा करें...',
     rate_order_btn:       'रेटिंग जमा करें',
 
-    home_hero_title:      'स्मार्ट जैविक खेती',
-    home_hero_subtitle:   'आधुनिक भारतीय किसानों के लिए AI-संचालित उपकरण',
+    home_hero_title:      'AI आधारित जैविक कृषि सलाहकार प्रणाली और बाज़ार',
+    home_hero_subtitle:   'भारतीय किसानों के लिए AI सलाहकार, रोग पहचान और जैविक बाज़ार',
     home_get_started:     'शुरू करें',
     home_learn_more:      'और जानें',
     home_features_title:  'KrishiAI क्यों?',
@@ -955,8 +955,8 @@ const TRANSLATIONS = {
     rate_order_review_ph: 'तुमचा अनुभव शेअर करा...',
     rate_order_btn:       'रेटिंग सबमिट करा',
 
-    home_hero_title:      'स्मार्ट सेंद्रिय शेती',
-    home_hero_subtitle:   'आधुनिक भारतीय शेतकऱ्यांसाठी AI-चालित साधने',
+    home_hero_title:      'AI आधारित सेंद्रिय शेती सल्लागार प्रणाली आणि बाजारपेठ',
+    home_hero_subtitle:   'भारतीय शेतकऱ्यांसाठी AI सल्लागार, रोग शोध आणि सेंद्रिय बाजारपेठ',
     home_get_started:     'सुरुवात करा',
     home_learn_more:      'अधिक जाणा',
     home_features_title:  'KrishiAI का?',

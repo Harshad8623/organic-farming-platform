@@ -145,7 +145,6 @@ def delete_product(product_id):
         return redirect(url_for('marketplace.my_products'))
 
     # Preserve order history: set product_id to NULL on completed/rejected orders
-    # so buyers don't lose their purchase history and ratings remain intact
     from models import Order as _Order
     db.session.execute(
         db.text('UPDATE orders SET product_id = NULL WHERE product_id = :pid AND status IN (:s1, :s2, :s3)'),
@@ -162,6 +161,65 @@ def delete_product(product_id):
     db.session.commit()
     flash('Product deleted successfully.', 'success')
     return redirect(url_for('marketplace.my_products'))
+
+
+# ---------------------------------------------------------------------------
+# Edit Product (Farmer only)
+# ---------------------------------------------------------------------------
+@marketplace_bp.route('/edit/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def edit_product(product_id):
+    """Farmer edits one of their existing product listings."""
+    if not current_user.is_farmer():
+        abort(403)
+
+    product = db.get_or_404(Product, product_id)
+
+    if product.farmer_id != current_user.id:
+        flash('You can only edit your own products.', 'danger')
+        return redirect(url_for('marketplace.my_products'))
+
+    if request.method == 'POST':
+        name        = request.form.get('name', '').strip()
+        price       = request.form.get('price', '').strip()
+        quantity    = request.form.get('quantity', '').strip()
+        description = request.form.get('description', '').strip()
+        category    = request.form.get('category', '').strip()
+
+        if not name or not price or not quantity:
+            flash('Name, price and quantity are required.', 'danger')
+            return render_template('marketplace/edit_product.html', product=product)
+
+        try:
+            product.price = float(price)
+        except (ValueError, TypeError):
+            flash('Price must be a valid number.', 'danger')
+            return render_template('marketplace/edit_product.html', product=product)
+
+        product.name        = name
+        product.quantity    = quantity
+        product.description = description
+        product.category    = category
+
+        # Handle optional new image
+        file = request.files.get('image')
+        if file and file.filename and _allowed_file(file.filename):
+            # Remove old image
+            if product.image_filename:
+                old_path = os.path.join(current_app.config['UPLOAD_FOLDER'], product.image_filename)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            new_filename = f"{uuid.uuid4().hex}.{ext}"
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], new_filename))
+            product.image_filename = new_filename
+
+        db.session.commit()
+        flash(f'"{product.name}" updated successfully!', 'success')
+        return redirect(url_for('marketplace.my_products'))
+
+    return render_template('marketplace/edit_product.html', product=product)
+
 
 
 # ---------------------------------------------------------------------------
